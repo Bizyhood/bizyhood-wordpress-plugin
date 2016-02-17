@@ -538,7 +538,7 @@ class Bizyhood_Core
 
             if ( !is_admin() && !empty($response) ) {
                 $token = $response->getToken();
-                $expires = $response->getExpires();
+                $expires = $response->getExpires() - time();
                 set_transient('bizyhood_oauth_data', $token, $expires);
             } else {
                 delete_transient('bizyhood_oauth_data');
@@ -769,7 +769,11 @@ class Bizyhood_Core
       
       try {
         $request = $client->getAuthenticatedRequest('GET', $api_url.'/business/?'.http_build_query($params), $access_token);
+        $time_start = microtime(true);
         $response = $client->getResponse($request);
+        $time_end = microtime(true);
+        $time_elapsed = $time_end - $time_start;
+        //echo "Took $time_elapsed seconds to complete API call.\n";
       } catch (Exception $e) {
         $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
         return array('error' => $error);
@@ -778,18 +782,12 @@ class Bizyhood_Core
       // avoid throwing an error
       if (!is_array($response) || empty($response)) { return; }
       
-      $response_json = $response['result'];
+      $businesses = $response['businesses'];
+      $total_count = $response['total_count'];
+      $page_size = $response['page_size'];
+      $facets = $response['search_facets'];
+      $categories = $response['search_facets']['categories_facet'];
       
-      // avoid throwing an error
-      if ($response_json === null) { return; }
-      
-      $businesses = json_decode(json_encode($response_json['businesses']), FALSE);
-      $total_count = $response_json['total_count'];
-      $page_size = $response_json['page_size'];
-      $facets = $response_json['search_facets'];
-      $categories = $response_json['search_facets']['categories_facet'];
-      
-            
       $return = array(
         'remote_settings'   => $remote_settings,
         'api_url'           => $api_url,
@@ -798,11 +796,9 @@ class Bizyhood_Core
         'categories'        => (isset($categories) ? $categories : ''),
         'category'          => (isset($category) ? $category : ''),
         'page'              => $page,
-        'businesses'        => $businesses,
+        'businesses'        => json_decode(json_encode($businesses), FALSE),
         'total_count'       => $total_count,
         'page_size'         => $page_size,
-        'response'          => json_encode($response['result']),
-        'response_json'     => $response_json,
         'facets'            => $facets
       );
       
@@ -914,7 +910,7 @@ class Bizyhood_Core
             } catch (Exception $e) {
                 return Bizyhood_View::load( 'listings/error', array( 'error' => __( 'Service is currently unavailable! Request timed out.', 'bizyhood' )), true );
             }  
-            $business = json_decode(json_encode($response['result']), FALSE);
+            $business = json_decode(json_encode($response), FALSE);
                         
             return Bizyhood_View::load('listings/single/default', array('content' => $content, 'business' => $business, 'signup_page_id' => $signup_page_id), true);
         }
