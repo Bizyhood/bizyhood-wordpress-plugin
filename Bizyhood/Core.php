@@ -17,7 +17,7 @@ require_once dirname(__FILE__) . '/Exception.php';
 require_once dirname(__FILE__) . '/Public/vendor/OAuth2/Client.php';
 require_once dirname(__FILE__) . '/Public/vendor/OAuth2/GrantType/IGrantType.php';
 require_once dirname(__FILE__) . '/Public/vendor/OAuth2/GrantType/ClientCredentials.php';
-
+require_once dirname(__FILE__) . '/Public/vendor/autoload.php';
 
 if (! class_exists('Bizyhood_Core')):
 
@@ -521,34 +521,30 @@ class Bizyhood_Core
     // add oAuth Data
     // we use transient because it autoexpires
     public function set_oauth_temp_data() {
-      
-      $provider = array (
-        'clientId'                =>  Bizyhood_Utility::getApiID(),
-        'clientSecret'            =>  Bizyhood_Utility::getApiSecret(),
-        'redirectUri'             =>  '', // no need for 2-legged auth
-        'urlAuthorize'            =>  Bizyhood_Utility::getApiUrl().'/o/authorize/',
-        'urlAccessToken'          =>  Bizyhood_Utility::getApiUrl().'/o/token/',
-        'urlResourceOwnerDetails' =>  Bizyhood_Utility::getApiUrl().'/o/resource'
-      );
+        $provider_config = array (
+            'clientId'                =>  Bizyhood_Utility::getApiID(),
+            'clientSecret'            =>  Bizyhood_Utility::getApiSecret(),
+            'redirectUri'             =>  '', // no need for 2-legged auth
+            'urlAuthorize'            =>  Bizyhood_Utility::getApiUrl().'/o/authorize/',
+            'urlAccessToken'          =>  Bizyhood_Utility::getApiUrl().'/o/token/',
+            'urlResourceOwnerDetails' =>  Bizyhood_Utility::getApiUrl().'/o/resource'
+        );
      
-     // if the oAuth data does nto exist
-     if (get_transient('bizyhood_oauth_data') === false ) {
-        $params = array();
-        $client = new OAuth2\Client($provider['clientId'], $provider['clientSecret']);
-        $response = $client->getAccessToken($provider['urlAccessToken'], 'client_credentials', $params);
-        
-        if ( !is_admin() && is_array($response) && !empty($response) && isset($response['code']) && strlen($response['result']['access_token']) > 0 && $response['code'] == 200) {
-          
-          $client->setAccessToken($response['result']['access_token']);
-          set_transient('bizyhood_oauth_data', $response['result']['access_token'], $response['result']['expires_in']);
-          
-        } else {
-          delete_transient('bizyhood_oauth_data');
-          return new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Error code: '. $response['code'] .'; '.$response['result']['error'], 'bizyhood' ) );
+        // if the oAuth data does nto exist
+        if (get_transient('bizyhood_oauth_data') === false ) {
+            $params = array();
+            $client = new \League\OAuth2\Client\Provider\GenericProvider($provider_config);
+            $response = $client->getAccessToken('client_credentials');
+
+            if ( !is_admin() && !empty($response) ) {
+                $token = $response->getToken();
+                $expires = $response->getExpires();
+                set_transient('bizyhood_oauth_data', $token, $expires);
+            } else {
+                delete_transient('bizyhood_oauth_data');
+                return new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Error code: '. $response['code'] .'; '.$response['result']['error'], 'bizyhood' ) );
+            }
         }
-      }
-      
-      
     }
     
     
@@ -737,7 +733,7 @@ class Bizyhood_Core
       }
 
       // set oAuth parameters
-      $provider = array (
+      $provider_config = array (
         'clientId'                =>  Bizyhood_Utility::getApiID(),
         'clientSecret'            =>  Bizyhood_Utility::getApiSecret(),
         'redirectUri'             =>  '', // no need for 2-legged auth
@@ -749,20 +745,13 @@ class Bizyhood_Core
       
       $params = array();
       try {
-        $client = new OAuth2\Client($provider['clientId'], $provider['clientSecret']);
+        $client = new \League\OAuth2\Client\Provider\GenericProvider($provider_config);
       } catch (Exception $e) {
         $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
         return array('error' => $error);
       }
     
-      $client->setAccessTokenType($client::ACCESS_TOKEN_BEARER);
-      $client->setAccessToken(get_transient('bizyhood_oauth_data'));
-      $curl_timeout = array(
-        CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_TIMEOUT => 10
-      );
-      $client->setCurlOptions($curl_timeout);
-      
+      $access_token = get_transient('bizyhood_oauth_data');
       
       $params = array(
         'format' =>'json',
@@ -779,7 +768,8 @@ class Bizyhood_Core
       }
       
       try {
-        $response = $client->fetch($api_url.'/business/', $params);
+        $request = $client->getAuthenticatedRequest('GET', $api_url.'/business/?'.http_build_query($params), $access_token);
+        $response = $client->getResponse($request);
       } catch (Exception $e) {
         $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
         return array('error' => $error);
@@ -877,12 +867,11 @@ class Bizyhood_Core
         
         // no reason to continue if we do not have oAuth token
         if (get_transient('bizyhood_oauth_data') === false) {
-          $authetication = $this->set_oauth_temp_data();
-          if (is_wp_error($authetication)) {
-            return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
-          }
+            $authetication = $this->set_oauth_temp_data();
+            if (is_wp_error($authetication)) {
+                return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
+            }
         }
-        
         
         $api_url = Bizyhood_Utility::getApiUrl();
 
@@ -894,44 +883,36 @@ class Bizyhood_Core
             
             // get the bizyhood_id
             if(isset($wp_query->query_vars['bizyhood_id'])) {
-              
-              $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+                $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
             } else {
-              $bizyhood_id = (isset($_REQUEST['bizyhood_id']) ? $_REQUEST['bizyhood_id'] : '');
+                $bizyhood_id = (isset($_REQUEST['bizyhood_id']) ? $_REQUEST['bizyhood_id'] : '');
             }
             
             
             // set oAuth parameters
-            $provider = array (
-              'clientId'                =>  Bizyhood_Utility::getApiID(),
-              'clientSecret'            =>  Bizyhood_Utility::getApiSecret(),
-              'redirectUri'             =>  '', // no need for 2-legged auth
-              'urlAuthorize'            =>  Bizyhood_Utility::getApiUrl().'/o/authorize/',
-              'urlAccessToken'          =>  Bizyhood_Utility::getApiUrl().'/o/token/',
-              'urlResourceOwnerDetails' =>  Bizyhood_Utility::getApiUrl().'/o/resource'
+            $provider_config = array (
+                'clientId'                =>  Bizyhood_Utility::getApiID(),
+                'clientSecret'            =>  Bizyhood_Utility::getApiSecret(),
+                'redirectUri'             =>  '', // no need for 2-legged auth
+                'urlAuthorize'            =>  Bizyhood_Utility::getApiUrl().'/o/authorize/',
+                'urlAccessToken'          =>  Bizyhood_Utility::getApiUrl().'/o/token/',
+                'urlResourceOwnerDetails' =>  Bizyhood_Utility::getApiUrl().'/o/resource'
             );
             
             
             $params = array();
             try {
-              $client = new OAuth2\Client($provider['clientId'], $provider['clientSecret']);
+                $client = new \League\OAuth2\Client\Provider\GenericProvider($provider_config);
             } catch (Exception $e) {
-              return Bizyhood_View::load( 'listings/error', array( 'error' => __( 'Service is currently unavailable! Request timed out.', 'bizyhood' )), true );
+                return Bizyhood_View::load( 'listings/error', array( 'error' => __( 'Service is currently unavailable! Request timed out.', 'bizyhood' )), true );
             }
 
-          
-            $client->setAccessTokenType($client::ACCESS_TOKEN_BEARER);
-            $client->setAccessToken(get_transient('bizyhood_oauth_data'));
-            $curl_timeout = array(
-              CURLOPT_CONNECTTIMEOUT => 10,
-              CURLOPT_TIMEOUT => 10
-            );
-            $client->setCurlOptions($curl_timeout);
+            $access_token = get_transient('bizyhood_oauth_data');
 
             try {
-              $response = $client->fetch($api_url . "/business/" . $bizyhood_id.'/', $params);
+                $response = $client->getAuthenticatedRequest('GET', $api_url . "/business/" . $bizyhood_id.'/', $access_token);
             } catch (Exception $e) {
-              return Bizyhood_View::load( 'listings/error', array( 'error' => __( 'Service is currently unavailable! Request timed out.', 'bizyhood' )), true );
+                return Bizyhood_View::load( 'listings/error', array( 'error' => __( 'Service is currently unavailable! Request timed out.', 'bizyhood' )), true );
             }  
             $business = json_decode(json_encode($response['result']), FALSE);
                         
