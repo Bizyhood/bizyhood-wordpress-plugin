@@ -142,6 +142,7 @@ class Bizyhood_Core
         add_action('admin_init', 	array($this, 'adminInitCallback'));
         add_action('wp_enqueue_scripts', 	array($this, 'load_plugin_styles'));
         add_action('wp_enqueue_scripts', 	array($this, 'load_plugin_gallery'));
+        add_action('wp_enqueue_scripts', 	array($this, 'load_plugin_analytics'));
         add_shortcode('bh-businesses', array($this, 'businesses_shortcode'));
         add_shortcode('bh-promotions', array($this, 'promotions_shortcode'));
         add_filter('the_content', array($this, 'postTemplate'), 100);
@@ -824,6 +825,11 @@ class Bizyhood_Core
         wp_enqueue_script('photoswipe-ui-js', Bizyhood_Utility::getVendorBaseURL() . 'photoswipe/js/photoswipe-ui-default.js', array('photoswipe-js'), BIZYHOOD_VERSION, true);
         wp_enqueue_script('bizyhood-gallery-js', Bizyhood_Utility::getJSBaseURL() . 'bizyhood-plugin-gallery.js', array(), BIZYHOOD_VERSION, true);
         wp_enqueue_script('bizyhood-custom-js', Bizyhood_Utility::getJSBaseURL() . 'bizyhood-custom.js', array(), BIZYHOOD_VERSION, true);
+    }
+    
+    function load_plugin_analytics()
+    {
+        wp_enqueue_script('bizyhood-segment-js', Bizyhood_Utility::getJSBaseURL() . 'bizyhood-segment-load.js', array(), BIZYHOOD_VERSION);
     }
     
     /**
