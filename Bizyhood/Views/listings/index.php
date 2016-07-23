@@ -6,10 +6,9 @@
     <?php
       $keywords = stripslashes($keywords);
     ?>
-    <form action="<?php echo site_url(); ?>/index.php" method="get">
-        <input type="hidden" name="page_id" value="<?php echo $list_page_id; ?>">
+    <form action="<?php echo get_permalink($list_page_id); ?>" method="get">
         <?php if (isset($_GET['cf'])) { ?>
-        <input type="hidden" name="cf" value="<?php echo (urldecode($_GET['cf'])); ?>">
+        <input type="hidden" name="cf" value="<?php echo (urldecode(stripslashes($_GET['cf']))); ?>">
         <?php } ?>
         <input type="search" class="bh_search-field" placeholder="Search businesses..." name="keywords" title="Search for:" value="<?php echo $keywords; ?>">
         <button class="search_submit" ><span class="entypo-search"></span></button>
