@@ -42,6 +42,7 @@ class Bizyhood_Core
     CONST KEY_EVENTS_PAGE_ID      = 'Bizyhood_Events_page_ID';
     CONST KEY_INSTALL_REPORT      = 'Bizyhood_Installed';
     CONST API_MAX_LIMIT           = 250;
+    CONST BIZYBOX_MAX_LIMIT       = 25;
     CONST BUSINESS_LOGO_WIDTH     = 307;
     CONST BUSINESS_LOGO_HEIGHT    = 304;
     CONST EXCERPT_MAX_LENGTH      = 20;
@@ -494,7 +495,7 @@ class Bizyhood_Core
       $_GET['keywords']  = $_REQUEST['keywords'];
     
       
-      $queryapi = $this->businesses_information(array('paged' => 1));
+      $queryapi = $this->businesses_information(array('paged' => 1, 'verified' => false, 'ps' => self::BIZYBOX_MAX_LIMIT));
       $numofpages = floor($queryapi['total_count'] / $queryapi['page_size']);
       $urlbase = get_permalink( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) );
       $date = date("Y-m-d H:i");
@@ -1179,7 +1180,7 @@ class Bizyhood_Core
       } elseif (isset($_GET['ps'])) {
         $ps = $_GET['ps'];
       } else {
-        $ps = self::API_MAX_LIMIT;
+        $ps = 12;
       }
 
       if (isset($_GET['c'])) {
@@ -1217,7 +1218,6 @@ class Bizyhood_Core
         $verified = 'y';
       } else {
         $verified = false;
-        $ps = 12;
       }
       
 
