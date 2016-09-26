@@ -35,6 +35,12 @@
   display: block; 
   width: 100%; 
 }
+.bizyres li.clicked a {
+  color: #fff;
+}
+.bizyres li.clicked {
+  background-color: #5b9dd9;
+}
 
 input.bizyradio {
   min-width: 14px;
