@@ -1150,6 +1150,7 @@ class Bizyhood_Core
       $filtered_attributes = shortcode_atts( array(
         'paged'     => null,
         'verified'  => null,
+        'paid'      => null,
         'ps'        => null
       ), $atts );
 
@@ -1220,6 +1221,22 @@ class Bizyhood_Core
         $ps = 12;
       }
       
+      
+      // get paid
+      $paid = $filtered_attributes['paid'];
+      if (get_query_var('paid')) {
+          $paid = get_query_var('paid');
+      } elseif (isset($_GET['paid'])) {
+          $paid = $_GET['paid'];
+      }
+      
+      // check if $paid has a valid value
+      if ($paid == true || $paid == True || $paid == 1 || $paid == 'y' || $paid == 'Y') {
+        $paid = 'y';
+      } else {
+        $paid = false;
+      }
+      
 
       $client = Bizyhood_oAuth::oAuthClient();
            
@@ -1244,6 +1261,10 @@ class Bizyhood_Core
       
       if ($verified == 'y') {
         $params['verified'] = $verified;
+      }
+      
+      if ($paid == 'y') {
+        $params['paid'] = $paid;
       }
       
       if (!empty($categories_query)) {
