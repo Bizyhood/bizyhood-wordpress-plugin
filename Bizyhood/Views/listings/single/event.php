@@ -1,19 +1,5 @@
 <?php if (!empty($event)) { ?>
-<div class="row bh_event-content single_event_page">	
-  <div class="col-md-12" itemscope itemtype="http://schema.org/Event">
-    <div class="row bh_business-header">
-        <div class="col-md-12 bh_business-header-title">	
-            <h3>
-              <a title="<?php echo htmlentities($event['business_name']); ?>" href="<?php echo $business_link; ?>">
-                <span  class="business_name"><?php echo $event['business_name']; ?></span>
-              </a>
-            </h3>
-            
-            <h4>
-              <span itemprop="name" class="event_name"><?php echo $event['name']; ?></span>
-            </h4>
-        </div>
-    </div>
+
 <?php
     
   $view_business_page_id  = Bizyhood_Utility::getOption(Bizyhood_Core::KEY_OVERVIEW_PAGE_ID);
@@ -34,6 +20,29 @@
   
 ?>
 
+
+<div class="row bh_event-content single_event_page">
+
+  <?php if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'before' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') { ?>
+  <div class="col-md-12">
+    <?php echo Bizyhood_Utility::buildShareIcons($single_event_link, $event['name'], $event['description'],''); ?>
+  </div>
+  <?php } ?>
+
+  <div class="col-md-12" itemscope itemtype="http://schema.org/Event">
+    <div class="row bh_business-header">
+        <div class="col-md-12 bh_business-header-title">	
+            <h3>
+              <a title="<?php echo htmlentities($event['business_name']); ?>" href="<?php echo $business_link; ?>">
+                <span  class="business_name"><?php echo $event['business_name']; ?></span>
+              </a>
+            </h3>
+            
+            <h4>
+              <span itemprop="name" class="event_name"><?php echo $event['name']; ?></span>
+            </h4>
+        </div>
+    </div>
     
     <span class="hidden">
       <span itemprop="location" itemscope itemtype="http://schema.org/Place">
@@ -95,6 +104,12 @@
 
   </div>
   
+  
+  <?php if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'after' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') { ?>
+  <div class="col-md-12">
+    <?php echo Bizyhood_Utility::buildShareIcons($single_event_link, $event['name'], $event['description'],''); ?>
+  </div>
+  <?php } ?>
 
 </div>
     <?php

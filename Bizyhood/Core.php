@@ -52,6 +52,13 @@ class Bizyhood_Core
     CONST BTN_BG_COLOR            = 'bh_btn_bg_color';
     CONST BTN_FONT_COLOR          = 'bh_btn_font_color';
     CONST API_CACHE_TIME          = 30; // 30 seconds
+    CONST ICON_FACEBOOK           = 'bh_facebook'; // 30 seconds
+    CONST ICON_TWITTER            = 'bh_twitter'; // 30 seconds
+    CONST ICON_GOOGLE             = 'bh_google'; // 30 seconds
+    CONST ICON_LINKEDIN           = 'bh_linkedin'; // 30 seconds
+    CONST ICON_PINTEREST          = 'bh_pinterest'; // 30 seconds
+    CONST ICON_MAIL               = 'bh_mail'; // 30 seconds
+    CONST ICON_PLACEMENT          = 'bh_icon_placement'; // 30 seconds
     
     public static $globals = null;
 
@@ -925,6 +932,7 @@ class Bizyhood_Core
         if (Bizyhood_Utility::is_bizyhood_page()) {
           wp_enqueue_style ('bizyhood-bootstrap-styles', Bizyhood_Utility::getCSSBaseURL() . 'bootstrap.min.css', array(), self::BOOTSTRAP_VERSION);
           wp_enqueue_style ('bizyhood-plugin-styles',  Bizyhood_Utility::getCSSBaseURL() . 'plugin.css', array(), BIZYHOOD_VERSION);
+          wp_enqueue_style ('socicon-styles',  Bizyhood_Utility::getCSSBaseURL() . 'socicon.css', array(), BIZYHOOD_VERSION);
         }
         wp_enqueue_style ('bizyhood-icons-styles',  'https://d17bale0hcbyzh.cloudfront.net/bizyhood/styles/entypo/entypo-icon-fonts.css?family=entypoplugin.css', array(), BIZYHOOD_VERSION);
         wp_enqueue_style ('bizyhood-plugin-global-styles',  Bizyhood_Utility::getCSSBaseURL() . 'plugin-global.css', array(), BIZYHOOD_VERSION);
@@ -1051,6 +1059,13 @@ class Bizyhood_Core
         $data['events_page_id']     = Bizyhood_Utility::getOption(self::KEY_EVENTS_PAGE_ID);
         $data['btn_bg_color']       = Bizyhood_Utility::getOption(self::BTN_BG_COLOR);
         $data['btn_font_color']     = Bizyhood_Utility::getOption(self::BTN_FONT_COLOR);
+        $data['bh_facebook']        = Bizyhood_Utility::getOption(self::ICON_FACEBOOK);
+        $data['bh_twitter']         = Bizyhood_Utility::getOption(self::ICON_TWITTER);
+        $data['bh_google']          = Bizyhood_Utility::getOption(self::ICON_GOOGLE);
+        $data['bh_linkedin']        = Bizyhood_Utility::getOption(self::ICON_LINKEDIN);
+        $data['bh_pinterest']       = Bizyhood_Utility::getOption(self::ICON_PINTEREST);
+        $data['bh_mail']            = Bizyhood_Utility::getOption(self::ICON_MAIL);
+        $data['bh_icon_placement']  = Bizyhood_Utility::getOption(self::ICON_PLACEMENT);
         $data['errors']             = array();
 
         if(!function_exists('curl_exec'))
@@ -1337,7 +1352,7 @@ class Bizyhood_Core
     
     
     
-    /***** additional busineess info *****/    
+    /***** additional business info *****/    
     
     /**
      * API call for additional business info
@@ -1794,7 +1809,8 @@ class Bizyhood_Core
               'footer_columns' => $footer_columns, 
               'location_column_width' => $location_column_width, 
               'show_third_column' => $show_third_column,
-              'claimit_width' => $claimit_width
+              'claimit_width' => $claimit_width,
+              'url' => get_permalink( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) ).$business->slug.'/'.$business->bizyhood_id.'/'
             );
             
             return Bizyhood_View::load('listings/single/default', $defaut_args, true);

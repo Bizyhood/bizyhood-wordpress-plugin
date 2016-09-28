@@ -371,6 +371,17 @@ h3.bh_category {
 .linkback { text-align: center; }
 .linkback a { font-size: 18px; }
 
+/* SOCIAL ICONS */
+.bh_share_icons { list-style-type: none; }
+.bh_share_icons li { display: inline-block; margin-right: 10px; }
+.bh_share_icons li a, .bh_share_icons li a:hover { text-decoration: none; box-shadow: none; border: 0; }
+.bh_share_icons li.bh_facebook a { color: #3e5b98; }
+.bh_share_icons li.bh_twitter a { color: #4da7de; }
+.bh_share_icons li.bh_googleplus a { color: #dd4b39; }
+.bh_share_icons li.bh_pinterest a { color: #c92619; }
+.bh_share_icons li.bh_linkedin a { color: #3371b7; }
+.bh_share_icons li.bh_mail a { color: #000000; }
+
 @media (max-width: 992px) {
   .bh_gallery-list .bh_gallery-thumb {width:33%;}
   .row.rowgrid [class*="col-"] {

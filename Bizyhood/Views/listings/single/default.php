@@ -12,6 +12,11 @@
 ?>
 <div class="bizyhood_wrap <?php if ($business->claimed == 1) { ?> claimed <?php } else { ?> unclaimed <?php } ?>" itemscope itemtype="http://schema.org/LocalBusiness">
   <div class="row zero-gutter bh_headline_row">
+    <?php if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'before' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') { ?>
+    <div class="col-md-12">
+      <?php echo Bizyhood_Utility::buildShareIcons($url, $business->name, $business->description,$business->business_logo->image->url); ?>
+    </div>
+    <?php } ?>
     <div class="col-md-9">
       <h2 itemprop="name"><?php echo $business->name ?></h2>
     </div>
@@ -297,8 +302,21 @@
     
   </div><!-- /.row -->
   <?php } ?>
-
-  <a href="<?php echo $backlink; ?>" class="btn-inline pull-right"><span class="entypo-left" aria-hidden="true"></span> Back</a>
+  
+  <div class="row">
+    <div class="col-md-9">
+      <?php 
+        if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'after' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') {
+        
+          echo Bizyhood_Utility::buildShareIcons($url, $business->name, $business->description,$business->business_logo->image->url);
+    
+        } 
+      ?>
+    </div>
+    <div class="col-md-3">
+      <a href="<?php echo $backlink; ?>" class="btn-inline pull-right"><span class="entypo-left" aria-hidden="true"></span> Back</a>
+    </div>
+  </div>
   
 
 <?php if ($business->claimed == 1) { ?>

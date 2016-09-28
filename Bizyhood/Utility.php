@@ -144,6 +144,48 @@ class Bizyhood_Utility
       return Bizyhood_View::load( 'snippets/dateTextMicrodata', $data, true );
     }
     
+    
+    /**
+     * Build social icons share links
+     * @param string $url URL to share
+     * @param string $title Title of the page
+     * @param string $description Description of the page
+     * @param string $image Image to share
+     * @return html template with the share icons string
+     */
+    public static function buildShareIcons($url='', $title='', $description='', $image='')
+    {
+      
+      $data = array();
+      
+      $url = htmlentities($url);
+      $title = htmlentities($title);
+      $description = htmlentities($description);
+      $image = htmlentities($image);
+
+      if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_FACEBOOK) == true) {
+        $data['facebook'] = 'http://www.facebook.com/sharer.php?u='. $url .'&amp;t='. $title;
+      }
+      if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_TWITTER) == true) {
+        $data['twitter'] = 'http://twitter.com/home?status='. $title .'%20'. $url;
+      }
+      if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_GOOGLE) == true) {
+        $data['googleplus'] = 'https://plus.google.com/share?url='. $url;
+      }
+      if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_LINKEDIN) == true) {
+        $data['linkedin'] = 'http://linkedin.com/shareArticle?mini=true&amp;url='. $url .'&amp;title='. $title;
+      }
+      if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PINTEREST) == true) {
+        $data['pinterest'] = 'http://pinterest.com/pin/create/button/?url='. $url .'&amp;description='. $title .' '. $url .'&amp;media='. $image;
+      }
+      if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_MAIL) == true) {
+        $data['mail'] = 'mailto:?subject='. $title .'&amp;body='. $url .'%20-%20'. $description;
+      }
+      
+      return Bizyhood_View::load( 'snippets/shareIcons', $data, true );
+    }
+    
+    
     /**
      * @return http protocol
      */

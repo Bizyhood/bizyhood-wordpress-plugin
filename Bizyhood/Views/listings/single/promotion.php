@@ -9,6 +9,13 @@
 
 ?>
 <div class="row bh_promotion-content single_promotion_page">	
+
+  <?php if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'before' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') { ?>
+  <div class="col-md-12">
+    <?php echo Bizyhood_Utility::buildShareIcons($single_promotion_link, $promotion['name'], $promotion['description'],''); ?>
+  </div>
+  <?php } ?>
+
   <div class="col-md-12">
     <div class="row bh_business-header">
         <div class="col-md-12 bh_business-header-title">	
@@ -62,6 +69,13 @@
 
       
   </div>
+  
+  <?php if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'after' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') { ?>
+  <div class="col-md-12">
+    <?php echo Bizyhood_Utility::buildShareIcons($single_promotion_link, $promotion['name'], $promotion['description'],''); ?>
+  </div>
+  <?php } ?>
+  
 </div>
     <?php
   }
