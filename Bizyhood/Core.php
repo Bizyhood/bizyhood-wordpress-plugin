@@ -379,9 +379,13 @@ class Bizyhood_Core
         
         $metadata['title'] = htmlentities($business->name .', '. $business->locality .', '. $business->region .' '. $business->postal_code .' - '.get_bloginfo('name'));
         $metadata['canonical'] = get_permalink($overview_page)  . $business->slug .'/'.$business->bizyhood_id .'/';
-        $metadata['claimed_description'] = wp_trim_words(htmlentities($business->description), self::META_DESCRIPTION_LENGTH, '');
-        $metadata['generic_description'] = htmlentities($business->name.' is a hyper-local, small business, located in and/or serving the '. $business->locality .', '. $business->region .' area.');
-        $metadata['claimed'] = $business->claimed;
+
+        if ($business->claimed == 1 && $business->description != '') {
+          $metadata['description'] = wp_trim_words(htmlentities($business->description), self::META_DESCRIPTION_LENGTH, '');
+        } else {
+          $metadata['description'] = htmlentities($business->name.' is a hyper-local, small business, located in and/or serving the '. $business->locality .', '. $business->region .' area.');
+        }
+        
         
         if($business->business_logo) {
           $metadata['logo'] = $business->business_logo->image->url;
@@ -402,15 +406,11 @@ class Bizyhood_Core
         
         if($single_event_information === false || !isset($single_event_information->name)) {
           return $buffer;
-        } else {
-         $business = $single_event_information; 
         }
         
-        $metadata['title'] = htmlentities($business->name .', '. $business->business_name .' - '.get_bloginfo('name'));
+        $metadata['title'] = htmlentities($single_event_information->name .', '. $single_event_information->business_name .' - '.get_bloginfo('name'));
         $metadata['canonical'] = get_permalink($events_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
-        $metadata['claimed_description'] = wp_trim_words(htmlentities($business->description), self::META_DESCRIPTION_LENGTH, '');
-        $metadata['generic_description'] = $metadata['claimed_description'];
-        $metadata['claimed'] = 1;
+        $metadata['description'] = wp_trim_words(htmlentities($single_event_information->description), self::META_DESCRIPTION_LENGTH, '');
 
       }
       
@@ -424,21 +424,17 @@ class Bizyhood_Core
         $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
 
         
-        $single_event_information = self::single_business_additional_info('promotions', $bizyhood_name, $bizyhood_id);
+        $single_promotion_information = self::single_business_additional_info('promotions', $bizyhood_name, $bizyhood_id);
         
         $business = '';
         
-        if($single_event_information === false || !isset($single_event_information->name)) {
+        if($single_promotion_information === false || !isset($single_promotion_information->name)) {
           return $buffer;
-        } else {
-         $business = $single_event_information; 
         }
         
-        $metadata['title'] = htmlentities($business->name .', '. $business->business_name .' - '.get_bloginfo('name'));
+        $metadata['title'] = htmlentities($single_promotion_information->name .', '. $single_promotion_information->business_name .' - '.get_bloginfo('name'));
         $metadata['canonical'] = get_permalink($promotions_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
-        $metadata['claimed_description'] = wp_trim_words(htmlentities($business->details), self::META_DESCRIPTION_LENGTH, '');
-        $metadata['generic_description'] = $metadata['claimed_description'];
-        $metadata['claimed'] = 1;
+        $metadata['description'] = wp_trim_words(htmlentities($single_promotion_information->details), self::META_DESCRIPTION_LENGTH, '');
 
       }
       
@@ -466,28 +462,13 @@ class Bizyhood_Core
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="'. $metadata['title'] .'" />
       ';
-      $claimed_description = $metadata['claimed_description'];
-      $generic_description = $metadata['generic_description'];
-      
-      if($metadata['claimed'] == 1) {
-        
-        
-        $meta .= '
-          <meta property="og:description" content="'. ($claimed_description != '' ? $claimed_description : $generic_description) .'" />
-          <meta name="twitter:description" content="'. ($claimed_description != '' ? $claimed_description : $generic_description) .'" />
-          <meta name="description" content="'. ($claimed_description != '' ? $claimed_description : $generic_description) .'" />
-          ';
-      } else {
-        
-        
-        $meta .= '        
-          <meta property="og:description" content="'. $generic_description  .'" />
-          <meta name="twitter:description" content="'. $generic_description  .'" />
-          <meta name="description" content="'. $generic_description .'" />
-          ';
-          
 
-      }
+      $meta .= '
+        <meta property="og:description" content="'. $metadata['description']  .'" />
+        <meta name="twitter:description" content="'. $metadata['description'] .'" />
+        <meta name="description" content="'. $metadata['description'] .'" />
+        ';
+
       
       if(isset($metadata['logo'])) {
         
