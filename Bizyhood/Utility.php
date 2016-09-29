@@ -164,19 +164,19 @@ class Bizyhood_Utility
       $image = htmlentities($image);
 
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_FACEBOOK) == true) {
-        $data['facebook'] = 'http://www.facebook.com/sharer.php?u='. $url .'&amp;t='. $title;
+        $data['facebook'] = 'https://www.facebook.com/sharer.php?u='. $url .'&amp;t='. $title;
       }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_TWITTER) == true) {
-        $data['twitter'] = 'http://twitter.com/home?status='. $title .'%20'. $url;
+        $data['twitter'] = 'https://twitter.com/home?status='. $title .'%20'. $url;
       }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_GOOGLE) == true) {
         $data['googleplus'] = 'https://plus.google.com/share?url='. $url;
       }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_LINKEDIN) == true) {
-        $data['linkedin'] = 'http://linkedin.com/shareArticle?mini=true&amp;url='. $url .'&amp;title='. $title;
+        $data['linkedin'] = 'https://linkedin.com/shareArticle?mini=true&amp;url='. $url .'&amp;title='. $title;
       }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PINTEREST) == true) {
-        $data['pinterest'] = 'http://pinterest.com/pin/create/button/?url='. $url .'&amp;description='. $title .' '. $url .'&amp;media='. $image;
+        $data['pinterest'] = 'https://pinterest.com/pin/create/button/?url='. $url .'&amp;description='. $title .' '. $url .'&amp;media='. $image;
       }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_MAIL) == true) {
         $data['mail'] = 'mailto:?subject='. $title .'&amp;body='. $url .'%20-%20'. $description;
