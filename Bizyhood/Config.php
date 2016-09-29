@@ -21,10 +21,12 @@ class Bizyhood_Config
         $config['zone_cache_ttl_seconds']    = 60*15; // 15 minutes
         $config['network_cache_ttl_seconds'] = 60*30; // 30 minutes
 
+        $wp_upload_dir = wp_upload_dir();
+
         $config['log'] = array (
 
             'level'     => Bizyhood_Log::DEBUG, //TODO: change this in prod
-            'directory' => dirname(__FILE__) . '/Logs'
+            'directory' => $wp_upload_dir['basedir'] . '/bizyhood/Logs'
 
         );
 

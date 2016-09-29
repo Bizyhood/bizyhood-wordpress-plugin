@@ -187,6 +187,40 @@ class Bizyhood_Core
               Bizyhood_Utility::setOption(self::KEY_EVENTS_PAGE_ID, $business_events_page_id);
             }
         }
+        
+        
+        // move logs to uploads if they are still on the old location
+        
+        // Get array of all source files
+        $delete = array();
+        $files = scandir(dirname(__FILE__) . '/Logs');
+        $copy_problem = 0;
+        
+        if ($files) {
+          
+          $wp_upload_dir = wp_upload_dir();
+          $source = dirname(__FILE__) . '/Logs/';
+          $destination = $wp_upload_dir['basedir'] . '/bizyhood/Logs/';
+
+          foreach ($files as $file) {
+            if (in_array($file, array(".",".."))) continue;
+
+            if (copy($source.$file, $destination.$file)) {
+              $delete[] = $source.$file;
+            } else {
+              $copy_problem = 1;
+            }
+          }
+          // Delete all successfully-copied files
+          if (!empty($delete)) {
+            foreach ($delete as $file) {
+              unlink($file);
+            }
+          }
+          if ($copy_problem == 0) {
+            rmdir($source);
+          }
+        }
 
     }
 
@@ -308,8 +342,8 @@ class Bizyhood_Core
         add_action('wp_loaded', array( $this, 'buffer_start'), 100000);    
         add_action('shutdown', array( $this, 'buffer_end'), 100000);       
         
-        // meta END       
-        
+        // meta END
+                
     }
     
     function reinitialize() {
