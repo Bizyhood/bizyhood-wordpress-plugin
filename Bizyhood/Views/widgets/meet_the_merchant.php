@@ -174,7 +174,7 @@ class bizy_mtm_widget extends WP_Widget {
     <p>
       <label for="<?php echo $this->get_field_id( 'paid' ); ?>"><?php _e( 'Paying only Businesses:' ); ?></label> 
       <select class="widefat" id="<?php echo $this->get_field_id( 'paid' ); ?>" name="<?php echo $this->get_field_name( 'paid' ); ?>">
-        <option value="n" <?php echo ($paid == 'n' ? 'selected="selected"': ''); ?>><?php _e( 'No, include all claimed businesses', 'bizyhood' ); ?></option>
+        <option value="n" <?php echo ($paid == 'n' ? 'selected="selected"': ''); ?>><?php _e( 'No, include all verified businesses', 'bizyhood' ); ?></option>
         <option value="y" <?php echo ($paid == 'y' ? 'selected="selected"': ''); ?>><?php _e( 'Yes, include only paying businesses', 'bizyhood' ); ?></option>
       </select>
 		</p>
