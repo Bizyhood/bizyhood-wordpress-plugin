@@ -28,7 +28,7 @@ jQuery(function($){
     $('#save-bizyhood').click(function() {
         
         var network_id = $('#network').val();
-        console.log($('#bh_btn_bg_color').iris('color'));
+        
         // Submit AJAX request
         jQuery.post(ajaxurl, {
              action: 'bizyhood_save_settings', 
@@ -41,7 +41,14 @@ jQuery(function($){
              promotions_page_id: $('#promotions_page_id').val(),
              events_page_id: $('#events_page_id').val(),
              btn_bg_color: $('#bh_btn_bg_color').val(),
-             btn_font_color: $('#bh_btn_font_color').val()
+             btn_font_color: $('#bh_btn_font_color').val(),
+             bh_facebook: $('#bh_facebook').is(':checked'),
+             bh_twitter: $('#bh_twitter').is(':checked'),
+             bh_google: $('#bh_google').is(':checked'),
+             bh_linkedin: $('#bh_linkedin').is(':checked'),
+             bh_pinterest: $('#bh_pinterest').is(':checked'),
+             bh_mail: $('#bh_mail').is(':checked'),
+             bh_icon_placement: $('#bh_icon_placement').val()
             }, 
             function(response) {
                 if(response.success) {

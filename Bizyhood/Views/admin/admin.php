@@ -173,6 +173,76 @@
                     </div>
                     
                     <div class="break"></div>
+                    
+                    
+                    <div class="option">
+                        <div class="control-label">
+                            <div class="name nomargin">Social sharing</div>
+                            <div class="desc nomargin">
+                              Choose social networks sharing for the business overview page
+                            </div>
+                        </div>
+                        <div class="control-container">
+                          <label for="bh_facebook">
+                            <input type="checkbox" id="bh_facebook" name="bh_facebook" value="TRUE" <?php if ($bh_facebook) { echo 'checked="checked"'; } ?> />
+                            Facebook
+                          </label>
+                          
+                          <br />
+                          <label for="bh_twitter">
+                            <input type="checkbox" id="bh_twitter" name="bh_twitter" value="TRUE" <?php if ($bh_twitter) { echo 'checked="checked"'; } ?> />
+                            Twitter
+                          </label>
+                          
+                          <br />
+                          <label for="bh_google">
+                            <input type="checkbox" id="bh_google" name="bh_google" value="TRUE" <?php if ($bh_google) { echo 'checked="checked"'; } ?> />
+                            Google
+                          </label>
+                          
+                          <br />
+                          <label for="bh_linkedin">
+                            <input type="checkbox" id="bh_linkedin" name="bh_linkedin" value="TRUE" <?php if ($bh_linkedin) { echo 'checked="checked"'; } ?> />
+                            Linkedin
+                          </label>
+                          
+                          <br />
+                          <label for="bh_pinterest">
+                            <input type="checkbox" id="bh_pinterest" name="bh_pinterest" value="TRUE" <?php if ($bh_pinterest) { echo 'checked="checked"'; } ?> />
+                            Pinterest
+                          </label>
+                          
+                          <br />
+                          <label for="bh_mail">
+                            <input type="checkbox" id="bh_mail" name="bh_mail" value="TRUE" <?php if ($bh_mail) { echo 'checked="checked"'; } ?> />
+                            Email
+                          </label>
+
+                        </div>
+                        <div style="clear:both;"></div>
+                        
+                        <div class="option">
+                            <div class="control-label">
+                                <div class="name nomargin">Social Icons Placement</div>
+                                <div class="desc nomargin">
+                                    The icons will be placed in single businesses, events and promotions pages<br />
+                                </div>
+                            </div>
+                            <div class="control-container">
+                                <select name="bh_icon_placement" id="bh_icon_placement">
+                                  <option value="">Do not display</option>
+                                  <option value="before" <?php echo ($bh_icon_placement == 'before' ? 'selected' : ''); ?>>Before content</option>
+                                  <option value="after" <?php echo ($bh_icon_placement == 'after' ? 'selected' : ''); ?>>After content</option>
+                                  <option value="both" <?php echo ($bh_icon_placement == 'both' ? 'selected' : ''); ?>>Before and After content</option>
+                                </select>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        
+                        <div style="clear:both;"></div>
+                    </div>
+                    
+                    <div class="break"></div>
 
                     <div class="option">
                         <div class="save-container">

@@ -32,6 +32,23 @@ jQuery(function($){
     jQuery('.sameheight>div').matchHeight();
 
   }
+  
+  var windowSizeArray = [ "width=800,height=500,scrollbars=yes" ];
+  
+  jQuery('.bh_nw').click(function (event){
+    event.preventDefault();
+    
+    var url = jQuery(this).attr("href");
+    var windowName = "bh_popUp";
+    var windowSize = windowSizeArray[0];
+
+    window.open(url, windowName, windowSize);
+
+    return false;
+
+  });
+  
+  
 });
     
     
