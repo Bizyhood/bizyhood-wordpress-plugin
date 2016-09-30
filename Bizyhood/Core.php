@@ -393,78 +393,140 @@ class Bizyhood_Core
     
     function buffer_callback($buffer) {
       
-      $overview_page = get_post( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) );
+      global $wp_query;
       
-      if (!is_page($overview_page)) {
+      $overview_page = Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID);
+      $events_page = Bizyhood_Utility::getOption(self::KEY_EVENTS_PAGE_ID);
+      $promotions_page = Bizyhood_Utility::getOption(self::KEY_PROMOTIONS_PAGE_ID);
+      
+      if (!is_page($overview_page) && !is_page($events_page) && !is_page($promotions_page) ) {
         return $buffer;
       }
       
+      $metadata = array();
       
-      $single_business_information = self::single_business_information();
+      // overview page metadata
+      if (is_page($overview_page)) {
+        
       
-      $business = '';
-      
-      if($single_business_information === false || !isset($single_business_information->name)) {
-        return $buffer;
-      } else {
-       $business = $single_business_information; 
+        $single_business_information = self::single_business_information();
+        
+        $business = '';
+        
+        if($single_business_information === false || !isset($single_business_information->name)) {
+          return $buffer;
+        } else {
+         $business = $single_business_information; 
+        }
+        
+        $metadata['title'] = htmlentities($business->name .', '. $business->locality .', '. $business->region .' '. $business->postal_code .' - '.get_bloginfo('name'));
+        $metadata['canonical'] = get_permalink($overview_page)  . $business->slug .'/'.$business->bizyhood_id .'/';
+
+        if ($business->claimed == 1 && $business->description != '') {
+          $metadata['description'] = wp_trim_words(htmlentities($business->description), self::META_DESCRIPTION_LENGTH, '');
+        } else {
+          $metadata['description'] = htmlentities($business->name.' is a hyper-local, small business, located in and/or serving the '. $business->locality .', '. $business->region .' area.');
+        }
+        
+        
+        if($business->business_logo) {
+          $metadata['logo'] = $business->business_logo->image->url;
+        }
       }
+      
+      // overview page metadata
+      if (is_page($events_page) && isset($wp_query->query_vars['bizyhood_id']) && $wp_query->query_vars['bizyhood_id'] != '') {
+
+        $bizyhood_name = '';
+        
+        $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
+        $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+        
+        $single_event_information = self::single_business_additional_info('events', $bizyhood_name, $bizyhood_id);
+        
+        $business = '';
+        
+        if($single_event_information === false || !isset($single_event_information->name)) {
+          return $buffer;
+        }
+        
+        $metadata['title'] = htmlentities($single_event_information->name .', '. $single_event_information->business_name .' - '.get_bloginfo('name'));
+        $metadata['canonical'] = get_permalink($events_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
+        $metadata['description'] = wp_trim_words(htmlentities($single_event_information->description), self::META_DESCRIPTION_LENGTH, '');
+
+      }
+      
+      // promotions page metadata
+      if (is_page($promotions_page) && isset($wp_query->query_vars['bizyhood_id']) && $wp_query->query_vars['bizyhood_id'] != '') {
+        
+        
+        $bizyhood_name = '';
+        
+        $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
+        $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+
+        
+        $single_promotion_information = self::single_business_additional_info('promotions', $bizyhood_name, $bizyhood_id);
+        
+        $business = '';
+        
+        if($single_promotion_information === false || !isset($single_promotion_information->name)) {
+          return $buffer;
+        }
+        
+        $metadata['title'] = htmlentities($single_promotion_information->name .', '. $single_promotion_information->business_name .' - '.get_bloginfo('name'));
+        $metadata['canonical'] = get_permalink($promotions_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
+        $metadata['description'] = wp_trim_words(htmlentities($single_promotion_information->details), self::META_DESCRIPTION_LENGTH, '');
+
+      }
+      
+      
+      if (empty($metadata)) {
+        return $buffer;
+      }
+
       
       // remove meta
       $buffer = preg_replace( '/<meta property="og.*?\/>\n/i', '', $buffer );
       $buffer = preg_replace( '/<meta name="twitter.*?\/>\n/i', '', $buffer );
       $buffer = preg_replace( '/<link rel="canonical.*?\/>\n/i', '', $buffer );
       
-      $title = htmlentities($business->name .', '. $business->locality .', '. $business->region .' '. $business->postal_code .' - '.get_bloginfo('name'));
+      
       
       $meta = '
-        <link rel="canonical" href="'. get_permalink($overview_page->ID)  . $business->slug .'/'.$business->bizyhood_id .'/" />
+        <link rel="canonical" href="'. $metadata['canonical'] .'" />
         <meta property="og:locale" content="'. get_locale() .'" />
         <meta property="og:type" content="article" />
-        <meta property="og:title" content="'. $title .'" />
-        <meta property="og:url" content="'. get_permalink($overview_page->ID)  . $business->slug .'/'.$business->bizyhood_id .'/" />
+        <meta property="og:title" content="'. $metadata['title'] .'" />
+        <meta property="og:url" content="'. $metadata['canonical'] .'" />
         <meta property="og:site_name" content="'. get_bloginfo('name') .'" />
         
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="'. $title .'" />
+        <meta name="twitter:title" content="'. $metadata['title'] .'" />
       ';
-      $claimed_description = wp_trim_words(htmlentities($business->description), self::META_DESCRIPTION_LENGTH, '');
-      $generic_description = htmlentities($business->name.' is a hyper-local, small business, located in and/or serving the '. $business->locality .', '. $business->region .' area.');
-      
-      if($business->claimed == 1) {
-        
-        
-        $meta .= '
-          <meta property="og:description" content="'. ($claimed_description != '' ? $claimed_description : $generic_description) .'" />
-          <meta name="twitter:description" content="'. ($claimed_description != '' ? $claimed_description : $generic_description) .'" />
-          <meta name="description" content="'. ($claimed_description != '' ? $claimed_description : $generic_description) .'" />
-          ';
-      } else {
-        
-        
-        $meta .= '        
-          <meta property="og:description" content="'. $generic_description  .'" />
-          <meta name="twitter:description" content="'. $generic_description  .'" />
-          <meta name="description" content="'. $generic_description .'" />
-          ';
-          
 
-      }
+      $meta .= '
+        <meta property="og:description" content="'. $metadata['description']  .'" />
+        <meta name="twitter:description" content="'. $metadata['description'] .'" />
+        <meta name="description" content="'. $metadata['description'] .'" />
+        ';
+
       
-      if($business->business_logo) {
+      if(isset($metadata['logo'])) {
         
         $meta .= '
-          <meta property="og:image" content="'. $business->business_logo->image->url .'" />
+          <meta property="og:image" content="'. $metadata['logo'] .'" />
         ';
       }
       
       
-      $buffer = preg_replace( '/<title.*?\/title>/si', '<title>'. $title .'</title>'."\n".$meta, $buffer );
+      $buffer = preg_replace( '/<title.*?\/title>/si', '<title>'. $metadata['title'] .'</title>'."\n".$meta, $buffer );
 
   
     
       return $buffer;
     }
+    
 
     
     
