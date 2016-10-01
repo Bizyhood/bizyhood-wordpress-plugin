@@ -723,7 +723,7 @@ class Bizyhood_Core
       // initialize array
       if ( empty( $pages ) ) $pages = Array();
       
-      $queryapi = $this->businesses_information(array('paged' => 1, 'verified' => 'y', 'ps' => self::API_MAX_LIMIT));
+      $queryapi = $this->businesses_information(array('paged' => 1, 'verified' => TRUE, 'ps' => self::API_MAX_LIMIT));
       $numofpages = floor($queryapi['total_count'] / $queryapi['page_size']);
       $urlbase = get_permalink( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) );
       $date = date("Y-m-d H:i");
@@ -742,7 +742,7 @@ class Bizyhood_Core
       // get the rest of the urls if they exist
       $i = $start + 1; // start  to query the API from the second batch
       while($i <= $numofpages) {
-        $queryapi = $this->businesses_information(array('paged' => $i, 'verified' => 'y', 'ps' => self::API_MAX_LIMIT));
+        $queryapi = $this->businesses_information(array('paged' => $i, 'verified' => TRUE, 'ps' => self::API_MAX_LIMIT));
         foreach($queryapi['businesses'] as $business) {
           $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
           $pages[] = Array( "loc" => $urlbase.$urlarr[0].'/'.$urlarr[1].'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );
@@ -993,7 +993,7 @@ class Bizyhood_Core
     // add sitemap to index
     function bizyhood_addtoindex_sitemap() {
       
-      $getfirstpage = $this->businesses_information(array('paged' => 1, 'verified' => 'y', 'ps' => self::API_MAX_LIMIT));
+      $getfirstpage = $this->businesses_information(array('paged' => 1, 'verified' => TRUE, 'ps' => self::API_MAX_LIMIT));
       $count  = $getfirstpage['total_count'];
       $yoastoptions = WPSEO_Options::get_all();
       $max_entries  = $yoastoptions['entries-per-page'];
@@ -1262,6 +1262,7 @@ class Bizyhood_Core
       $filtered_attributes = shortcode_atts( array(
         'paged'     => null,
         'verified'  => null,
+        'paid'      => null,
         'ps'        => null
       ), $atts );
 
@@ -1325,10 +1326,26 @@ class Bizyhood_Core
       }
       
       // check if $verified has a valid value
-      if ($verified == true || $verified == True || $verified == 1 || $verified == 'y' || $verified == 'Y') {
-        $verified = 'y';
+      if ($verified == true || $verified == TRUE || $verified == 1 || $verified == 'y' || $verified == 'Y') {
+        $verified = TRUE;
       } else {
         $verified = false;
+      }
+      
+      
+      // get paid
+      $paid = $filtered_attributes['paid'];
+      if (get_query_var('paid')) {
+          $paid = get_query_var('paid');
+      } elseif (isset($_GET['paid'])) {
+          $paid = $_GET['paid'];
+      }
+      
+      // check if $paid has a valid value
+      if ($paid == true || $paid == TRUE || $paid == 1 || $paid == 'y' || $paid == 'Y') {
+        $paid = TRUE;
+      } else {
+        $paid = false;
       }
       
 
@@ -1353,8 +1370,12 @@ class Bizyhood_Core
         $params['cf'] = $category;
       }
       
-      if ($verified == 'y') {
+      if ($verified == TRUE) {
         $params['verified'] = $verified;
+      }
+      
+      if ($paid == TRUE) {
+        $params['paid'] = $paid;
       }
       
       if (!empty($categories_query)) {

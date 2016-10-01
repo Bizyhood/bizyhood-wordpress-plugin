@@ -52,7 +52,8 @@ class bizy_mtm_widget extends WP_Widget {
     // cache the results
     $atts = array(
       'paged'     => 1,
-      'verified'  => 'y',
+      'verified'  => TRUE,
+      'paid'      => (isset($instance['paid']) ? $instance['paid'] : 'n'),
       'ps'        => 25
     );
     $business = Bizyhood_Core::get_cache_value('bizyhood_mtm_widget', 'businesses', 'businesses_information', $atts, null, true);
@@ -162,12 +163,20 @@ class bizy_mtm_widget extends WP_Widget {
 		$color_label_font = ! empty( $instance['color_label_font'] ) ? $instance['color_label_font'] : self::$default_colors['color_label_font'];
 		$color_business_font = ! empty( $instance['color_business_font'] ) ? $instance['color_business_font'] : self::$default_colors['color_business_font'];
     $logo_size = ! empty( $instance['logo_size'] ) ? $instance['logo_size'] : 'large';
+    $paid = ! empty( $instance['paid'] ) ? $instance['paid'] : 'n';
     
     $uid = uniqid ();
 		?>
 		<p>
       <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label> 
       <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
+		</p>
+    <p>
+      <label for="<?php echo $this->get_field_id( 'paid' ); ?>"><?php _e( 'Paying only Businesses:' ); ?></label> 
+      <select class="widefat" id="<?php echo $this->get_field_id( 'paid' ); ?>" name="<?php echo $this->get_field_name( 'paid' ); ?>">
+        <option value="n" <?php echo ($paid == 'n' ? 'selected="selected"': ''); ?>><?php _e( 'No, include all verified businesses', 'bizyhood' ); ?></option>
+        <option value="y" <?php echo ($paid == 'y' ? 'selected="selected"': ''); ?>><?php _e( 'Yes, include only paying businesses', 'bizyhood' ); ?></option>
+      </select>
 		</p>
 		<p>
       <label for="<?php echo $this->get_field_id( 'layout' ); ?>"><?php _e( 'Layout:', 'bizyhood' ); ?></label> 
@@ -279,6 +288,7 @@ class bizy_mtm_widget extends WP_Widget {
 		$instance = array();
 		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
 		$instance['layout'] = ( ! empty( $new_instance['layout'] ) ) ? strip_tags( $new_instance['layout'] ) : '';
+		$instance['paid'] = ( ! empty( $new_instance['paid'] ) ) ? strip_tags( $new_instance['paid'] ) : '';
 		$instance['intro'] = ( ! empty( $new_instance['intro'] ) ) ? strip_tags( $new_instance['intro'] ) : '';
 		$instance['row1'] = ( ! empty( $new_instance['row1'] ) ) ? strip_tags( $new_instance['row1'] ) : '';
 		$instance['row2'] = ( ! empty( $new_instance['row2'] ) ) ? strip_tags( $new_instance['row2'] ) : '';
