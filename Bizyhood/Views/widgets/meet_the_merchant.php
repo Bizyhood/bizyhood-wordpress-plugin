@@ -52,7 +52,7 @@ class bizy_mtm_widget extends WP_Widget {
     // cache the results
     $atts = array(
       'paged'     => 1,
-      'verified'  => 'y',
+      'verified'  => TRUE,
       'paid'      => (isset($instance['paid']) ? $instance['paid'] : 'n'),
       'ps'        => 25
     );
