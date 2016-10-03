@@ -169,7 +169,7 @@ class Bizyhood_Utility
         $data['facebook'] = 'https://www.facebook.com/sharer.php?u='. $url .'&amp;t='. $title;
       }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_TWITTER) == true) {
-        $data['twitter'] = 'https://twitter.com/home?status='. $title .'%20'. $url;
+        $data['twitter'] = 'https://twitter.com/intent/tweet?text='. str_replace('&amp;', '%26', ($title)) .'&url='. urlencode($url);
       }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_GOOGLE) == true) {
         $data['googleplus'] = 'https://plus.google.com/share?url='. $url;
