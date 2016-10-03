@@ -91,7 +91,7 @@
             <dt>Date</dt><br />
             <dd><?php echo $dates; ?></dd>
             <dt>Time</dt><br />
-            <dd><?php echo $eventstart->format('g:i A'); ?></dd>
+            <dd><?php echo $eventstart->format('g:i A'); ?><?php echo ($event['end'] ? ' - '.$eventend->format('g:i A') : ''); ?></dd>
             <dt>Location</dt><br />
             <dd><?php echo $event['address1']; ?><br /><?php echo $event['locality']; ?>, <?php echo $event['region']; ?> <?php echo $event['postal_code']; ?></dd>
             <dt>Cost</dt><br />
