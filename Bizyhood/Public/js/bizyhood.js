@@ -46,7 +46,6 @@ jQuery(function($){
              bh_twitter: $('#bh_twitter').is(':checked'),
              bh_google: $('#bh_google').is(':checked'),
              bh_linkedin: $('#bh_linkedin').is(':checked'),
-             bh_pinterest: $('#bh_pinterest').is(':checked'),
              bh_mail: $('#bh_mail').is(':checked'),
              bh_icon_placement: $('#bh_icon_placement').val()
             }, 

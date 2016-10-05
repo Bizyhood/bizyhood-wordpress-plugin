@@ -57,7 +57,6 @@ class Bizyhood_Core
     CONST ICON_TWITTER            = 'bh_twitter'; // 30 seconds
     CONST ICON_GOOGLE             = 'bh_google'; // 30 seconds
     CONST ICON_LINKEDIN           = 'bh_linkedin'; // 30 seconds
-    CONST ICON_PINTEREST          = 'bh_pinterest'; // 30 seconds
     CONST ICON_MAIL               = 'bh_mail'; // 30 seconds
     CONST ICON_PLACEMENT          = 'bh_icon_placement'; // 30 seconds
     
@@ -1160,7 +1159,6 @@ class Bizyhood_Core
         $data['bh_twitter']         = Bizyhood_Utility::getOption(self::ICON_TWITTER);
         $data['bh_google']          = Bizyhood_Utility::getOption(self::ICON_GOOGLE);
         $data['bh_linkedin']        = Bizyhood_Utility::getOption(self::ICON_LINKEDIN);
-        $data['bh_pinterest']       = Bizyhood_Utility::getOption(self::ICON_PINTEREST);
         $data['bh_mail']            = Bizyhood_Utility::getOption(self::ICON_MAIL);
         $data['bh_icon_placement']  = Bizyhood_Utility::getOption(self::ICON_PLACEMENT);
         $data['errors']             = array();

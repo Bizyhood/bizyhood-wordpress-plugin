@@ -38,7 +38,6 @@ class Bizyhood_Ajax
         Bizyhood_Utility::setOption(Bizyhood_Core::ICON_TWITTER, $_POST['bh_twitter'] === 'true');
         Bizyhood_Utility::setOption(Bizyhood_Core::ICON_GOOGLE, $_POST['bh_google'] === 'true');
         Bizyhood_Utility::setOption(Bizyhood_Core::ICON_LINKEDIN, $_POST['bh_linkedin'] === 'true');
-        Bizyhood_Utility::setOption(Bizyhood_Core::ICON_PINTEREST, $_POST['bh_pinterest'] === 'true');
         Bizyhood_Utility::setOption(Bizyhood_Core::ICON_MAIL, $_POST['bh_mail'] === 'true');
         Bizyhood_Utility::setOption(Bizyhood_Core::ICON_PLACEMENT, $_POST['bh_icon_placement']);
         die(json_encode(array('success' => true)));
