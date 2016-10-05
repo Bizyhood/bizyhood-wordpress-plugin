@@ -205,13 +205,7 @@
                             <input type="checkbox" id="bh_linkedin" name="bh_linkedin" value="TRUE" <?php if ($bh_linkedin) { echo 'checked="checked"'; } ?> />
                             Linkedin
                           </label>
-                          
-                          <br />
-                          <label for="bh_pinterest">
-                            <input type="checkbox" id="bh_pinterest" name="bh_pinterest" value="TRUE" <?php if ($bh_pinterest) { echo 'checked="checked"'; } ?> />
-                            Pinterest
-                          </label>
-                          
+                                                    
                           <br />
                           <label for="bh_mail">
                             <input type="checkbox" id="bh_mail" name="bh_mail" value="TRUE" <?php if ($bh_mail) { echo 'checked="checked"'; } ?> />

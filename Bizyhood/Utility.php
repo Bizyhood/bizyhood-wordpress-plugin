@@ -183,9 +183,6 @@ class Bizyhood_Utility
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_LINKEDIN) == true) {
         $data['linkedin'] = 'https://linkedin.com/shareArticle?mini=true&amp;url='. $url .'&amp;title='. $title;
       }
-      if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PINTEREST) == true) {
-        $data['pinterest'] = 'https://pinterest.com/pin/create/button/?url='. $url .'&amp;description='. $title .' '. $url .'&amp;media='. $image;
-      }
       if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_MAIL) == true) {
         $data['mail'] = 'mailto:?subject='. $title .'&amp;body='. $url .'%20-%20'. $description;
       }
