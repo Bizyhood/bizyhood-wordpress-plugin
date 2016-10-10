@@ -189,7 +189,7 @@ class bizy_promotions_widget extends WP_Widget {
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form( $instance ) {
-		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'New title', 'bizyhood' );
+		$title = ! empty( $instance['title'] ) ? $instance['title'] : '';
 		$layout = ! empty( $instance['layout'] ) ? $instance['layout'] : 'full';
 		$intro = ! empty( $instance['intro'] ) ? $instance['intro'] : '';
 		$row1 = ! empty( $instance['row1'] ) ? $instance['row1'] : 'Want to see all our local promotions?';
