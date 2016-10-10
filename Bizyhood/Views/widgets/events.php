@@ -198,7 +198,7 @@ class bizy_events_widget extends WP_Widget {
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form( $instance ) {
-		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'New title', 'bizyhood' );
+		$title = ! empty( $instance['title'] ) ? $instance['title'] : '';
 		$events_page = ! empty( $instance['events_page'] ) ? $instance['events_page'] : '';
 		$layout = ! empty( $instance['layout'] ) ? $instance['layout'] : 'full';
 		$intro = ! empty( $instance['intro'] ) ? $instance['intro'] : '';
