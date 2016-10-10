@@ -200,13 +200,17 @@ class Bizyhood_Core
         
         // Get array of all source files
         $delete = array();
-        $files = scandir(dirname(__FILE__) . '/Logs');
+        $files = array();
+        $old_path = dirname(__FILE__) . '/Logs/';
+        if (file_exists($old_path)) {
+          $files = scandir($old_path);
+        }
         $copy_problem = 0;
         
-        if ($files) {
+        if ($files && !empty($files)) {
           
           $wp_upload_dir = wp_upload_dir();
-          $source = dirname(__FILE__) . '/Logs/';
+          $source = $old_path;
           $destination = $wp_upload_dir['basedir'] . '/bizyhood/Logs/';
 
           foreach ($files as $file) {
