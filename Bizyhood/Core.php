@@ -1344,7 +1344,7 @@ class Bizyhood_Core
       }
       
       // check if $paid has a valid value
-      if ($paid == true || $paid == TRUE || $paid == 1 || $paid == 'y' || $paid == 'Y') {
+      if ($paid === true || $paid === TRUE || $paid == 1 || $paid == 'y' || $paid == 'Y') {
         $paid = TRUE;
       } else {
         $paid = false;
@@ -1376,7 +1376,7 @@ class Bizyhood_Core
         $params['verified'] = $verified;
       }
       
-      if ($paid == TRUE) {
+      if ($paid === TRUE) {
         $params['paid'] = $paid;
       }
       
