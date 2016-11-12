@@ -1988,7 +1988,8 @@ class Bizyhood_Core
         
         $authetication = Bizyhood_oAuth::set_oauth_temp_data();
         if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
-          return Bizyhood_View::load( 'rss/error', array( 'error' => $authetication->get_error_message()), true );
+          Bizyhood_View::load( 'rss/error', array( 'error' => $authetication->get_error_message()), false );
+          die;
         }
         
         // cache the results
@@ -1998,7 +1999,8 @@ class Bizyhood_Core
           $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
           $errormessage = 'sign up or login to Bizyhood';
           
-          return Bizyhood_View::load( 'rss/error', array( 'error' => $errormessage), true );
+          Bizyhood_View::load( 'rss/error', array( 'error' => $errormessage), false );
+          die;
         }
         
         
