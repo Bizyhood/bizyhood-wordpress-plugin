@@ -53,12 +53,13 @@ class Bizyhood_Core
     CONST BTN_BG_COLOR            = 'bh_btn_bg_color';
     CONST BTN_FONT_COLOR          = 'bh_btn_font_color';
     CONST API_CACHE_TIME          = 30; // 30 seconds
-    CONST ICON_FACEBOOK           = 'bh_facebook'; // 30 seconds
-    CONST ICON_TWITTER            = 'bh_twitter'; // 30 seconds
-    CONST ICON_GOOGLE             = 'bh_google'; // 30 seconds
-    CONST ICON_LINKEDIN           = 'bh_linkedin'; // 30 seconds
-    CONST ICON_MAIL               = 'bh_mail'; // 30 seconds
-    CONST ICON_PLACEMENT          = 'bh_icon_placement'; // 30 seconds
+    CONST ICON_FACEBOOK           = 'bh_facebook';
+    CONST ICON_TWITTER            = 'bh_twitter';
+    CONST ICON_GOOGLE             = 'bh_google';
+    CONST ICON_LINKEDIN           = 'bh_linkedin';
+    CONST ICON_MAIL               = 'bh_mail';
+    CONST ICON_PLACEMENT          = 'bh_icon_placement';
+    CONST RSS_SUFFIX              = 'rssfeed';
     
     public static $globals = null;
 
@@ -354,7 +355,13 @@ class Bizyhood_Core
         add_action('shutdown', array( $this, 'buffer_end'), 100000);       
         
         // meta END
-                
+        
+        // rss feed START
+        
+        add_action('wp', array( $this, 'load_rss'));
+        
+        // rss feed END
+
     }
     
     function reinitialize() {
@@ -403,6 +410,13 @@ class Bizyhood_Core
       $promotions_page = Bizyhood_Utility::getOption(self::KEY_PROMOTIONS_PAGE_ID);
       
       if (!is_page($overview_page) && !is_page($events_page) && !is_page($promotions_page) ) {
+        return $buffer;
+      }
+      
+      $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
+      $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+              
+      if ($bizyhood_name == self::RSS_SUFFIX || $bizyhood_id == self::RSS_SUFFIX) {
         return $buffer;
       }
       
@@ -1943,6 +1957,75 @@ class Bizyhood_Core
     function bizyhood_plugin_action_links( $links ) {
        $links[] = '<a href="'. esc_url( get_admin_url(null, 'options-general.php?page=Bizyhood') ) .'">'. __('Settings', 'bizyhood') .'</a>';
        return $links;
+    }
+    
+    
+    function load_rss() {
+      
+      global $wp_query;
+      
+      $events_page = Bizyhood_Utility::getOption(self::KEY_EVENTS_PAGE_ID);
+      $promotions_page = Bizyhood_Utility::getOption(self::KEY_PROMOTIONS_PAGE_ID);
+      if (is_page($events_page)) {
+        $current_page = 'events';
+      } elseif (is_page($promotions_page)) {
+        $current_page = 'promotions';
+      } else {
+        return;
+      }
+
+      $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
+      $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+              
+      if ($bizyhood_name == self::RSS_SUFFIX || $bizyhood_id == self::RSS_SUFFIX) {
+        
+        
+        
+        
+        
+        // init variable
+        $business_name = '';
+        
+        $authetication = Bizyhood_oAuth::set_oauth_temp_data();
+        if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
+          Bizyhood_View::load( 'rss/error', array( 'error' => $authetication->get_error_message()), false );
+          die;
+        }
+        
+        // cache the results
+        $cached_results = self::get_cache_value('bizyhood_'. $current_page .'_widget', 'response_json', 'business_details_information', $attrs, $current_page);
+              
+        if ($cached_results === false) {
+          $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
+          $errormessage = 'sign up or login to Bizyhood';
+          
+          Bizyhood_View::load( 'rss/error', array( 'error' => $errormessage), false );
+          die;
+        }
+        
+        
+        $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID);
+        
+        
+        if (isset($wp_query->query_vars['bizyhood_name']) && $wp_query->query_vars['bizyhood_name'] != self::RSS_SUFFIX ) {
+          $results = self::single_business_additional_info($current_page, $wp_query->query_vars['bizyhood_name']);
+          if ($results !== false && !empty($results)) {
+            $cached_results = json_decode(json_encode($results), true); // convert to array and replace results
+            $business_name = $cached_results[0]['business_name'];
+          }
+        }
+
+        $results_args = array( 
+          'data' => $cached_results, 
+          'list_page_id' => $list_page_id, 
+          'business_name' => $business_name
+        );
+      
+        Bizyhood_View::load('rss/'.$current_page, $results_args);
+        die;
+      }
+        
+      
     }
     
 }
