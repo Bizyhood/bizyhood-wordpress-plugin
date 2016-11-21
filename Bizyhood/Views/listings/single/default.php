@@ -141,7 +141,9 @@
           <?php if($business->website) { ?>
             <p class="truncate long">Visit: <a class="bh_site_link" itemprop="url" href="<?php echo $business->website; ?>" target="_blank"><?php echo str_replace(array('http://', 'https://', 'www.'), array('','',''), $business->website); ?></a></p>
           <?php } ?>
-
+          <?php if($business->cta) { ?>
+            <a class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo $business->cta->url; ?>"><?php echo $business->cta->label; ?></a>
+          <?php } ?>  
           <?php if($business->social_networks) { ?>
             <?php foreach($business->social_networks as $social_network) { 
                 if (strtolower($social_network->name) == 'google') {
