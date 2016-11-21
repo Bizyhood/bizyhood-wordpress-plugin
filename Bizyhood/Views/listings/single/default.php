@@ -135,15 +135,15 @@
     <?php if($show_third_column): ?>
       <div class="col-md-3 business_hours">
         <div class="column-inner">
+          <?php if($business->cta) { ?>
+            <p><a id="id_<?php echo $business->cta->name; ?>" class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo $business->cta->url; ?>"><?php echo $business->cta->label; ?></a></p>
+          <?php } ?>  
           <?php if($business->telephone) { ?>
             <p>Call us: <a href="tel:<?php echo $business->telephone; ?>" itemprop="telephone"><?php echo $business->telephone; ?></a></p>
           <?php } ?>
           <?php if($business->website) { ?>
             <p class="truncate long">Visit: <a class="bh_site_link" itemprop="url" href="<?php echo $business->website; ?>" target="_blank"><?php echo str_replace(array('http://', 'https://', 'www.'), array('','',''), $business->website); ?></a></p>
           <?php } ?>
-          <?php if($business->cta) { ?>
-            <a class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo $business->cta->url; ?>"><?php echo $business->cta->label; ?></a>
-          <?php } ?>  
           <?php if($business->social_networks) { ?>
             <?php foreach($business->social_networks as $social_network) { 
                 if (strtolower($social_network->name) == 'google') {
@@ -372,4 +372,11 @@
 <?php } ?>
 <script type="text/javascript">
     analytics.page('Business Overview');
+    <?php if($business->cta) { ?>
+    var cta_link = document.getElementById('id_<?php echo $business->cta->name; ?>');
+    analytics.trackLink(cta_link, 'Clicked Business CTA', {
+        cta: '<?php echo $business->cta->name; ?>'
+    });
+    <?php } ?>  
+    
 </script>
