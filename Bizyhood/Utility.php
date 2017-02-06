@@ -90,6 +90,9 @@ class Bizyhood_Utility
       
       $dates = '';
       
+      // set bizyhood timezone
+      date_default_timezone_set('America/Chicago');
+      
       // check date
       $today = new DateTime();
       $start_date = new DateTime($start); // start date
