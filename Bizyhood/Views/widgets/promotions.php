@@ -69,6 +69,7 @@ class bizy_promotions_widget extends WP_Widget {
     // if no promotions are found exit with an error message
     if ($promotion === false) {
       echo __('There are no promotions to display', 'bizyhood');
+      echo $args['after_widget'];
       return;
     }
     
