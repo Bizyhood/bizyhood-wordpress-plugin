@@ -61,6 +61,7 @@ class bizy_mtm_widget extends WP_Widget {
     // if no businesses are found exit with an error message
     if ($business === false || empty($business)) {
       echo __('There are no businesses to display', 'bizyhood');
+      echo $args['after_widget'];
       return;
     }
     
