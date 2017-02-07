@@ -90,8 +90,9 @@ class Bizyhood_Utility
       
       $dates = '';
       
-      // set bizyhood timezone
-      date_default_timezone_set('America/Chicago');
+      // remove timzone offset
+      $start = str_replace('T', ' ', substr($start, 0, strrpos($start, "-")));
+      $end = str_replace('T', ' ', substr($end, 0, strrpos($end, "-")));
       
       // check date
       $today = new DateTime();
