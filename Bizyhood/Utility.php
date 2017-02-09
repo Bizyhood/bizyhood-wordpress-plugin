@@ -105,9 +105,9 @@ class Bizyhood_Utility
         'str_start_datetime' => $start_date->format('U'),
         'str_tomorrow_datetime' => $tomorrow_date->format('U'),
         'str_end_datetime' => ($end !== NULL ? $end_date->format('U') : false),
-        'wp_start_date' => date_i18n( get_option( 'date_format' ), $start_date->format('U')),
-        'wp_tomorrow_date' => date_i18n( get_option( 'date_format' ), $tomorrow_date->format('U')),
-        'wp_end_date' => ($end !== NULL ? date_i18n( get_option( 'date_format' ), $end_date->format('U')) : false),
+        'wp_start_date' => $start_date->format(get_option( 'date_format' )),
+        'wp_tomorrow_date' => $tomorrow_date->format(get_option( 'date_format' )),
+        'wp_end_date' => ($end !== NULL ? $end_date->format(get_option( 'date_format' )) : false),
       );
         
       return Bizyhood_View::load( 'snippets/dateText', $data, true );
