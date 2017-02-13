@@ -250,8 +250,8 @@
   </div><!-- /.row -->
       
       
+  <?php if ($business->claimed == 1) { ?>
   <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
-      <?php if ($business->claimed == 1) { ?>
     
     <div class="col-md-12">
       <div class="column-inner">
@@ -285,9 +285,9 @@
             <?php } ?>
         </div><!-- /.col-md-12 -->
       
-      <?php } ?>
       
   </div><!-- /.row -->
+  <?php } ?>
   
 </div><!-- /.rowgrid_wrap -->
   
