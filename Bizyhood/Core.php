@@ -1916,7 +1916,7 @@ class Bizyhood_Core
               }
               
               if ($top_columns_count > 0) {
-                $show_first_row == true;
+                $show_first_row = true;
                 $top_columns = $top_columns / $top_columns_count; // avoid devision by zero
               }
               
