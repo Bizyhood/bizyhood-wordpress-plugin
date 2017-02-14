@@ -172,6 +172,7 @@
               <p class="truncate long">Visit: <a class="bh_site_link" itemprop="url" href="<?php echo $business->website; ?>" target="_blank"><?php echo str_replace(array('http://', 'https://', 'www.'), array('','',''), $business->website); ?></a></p>
             <?php } ?>
             <?php if($business->social_networks) { ?>
+              <p class="social_icons_wrap">
               <?php foreach($business->social_networks as $social_network) { 
                   if (strtolower($social_network->name) == 'google') {
                     $social_network->name = 'gplus';
@@ -181,6 +182,7 @@
                   <span class="entypo-<?php echo strtolower($social_network->name); ?>"></span>
                 </a>
               <?php } ?>
+              </p>
             <?php } ?>
           </div>
         </div>
