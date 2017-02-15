@@ -37,11 +37,13 @@
     </div>
   </div>
   
-  <div class="row rowgrid zero-gutter main_business_info sameheight">
   
+<div class="rowgrid_wrap">
+
   <?php if ($business->claimed != 1) { ?>
   
-    <div class="col-md-<?php echo $claimit_width; ?> feedback_cta">
+  <div class="row rowgrid zero-gutter main_business_info sameheight">
+    <div class="col-md-12 feedback_cta">
       <div class="bh_table">
         <div class="bh_tablerow">
           <div class="bh_tablecell">
@@ -51,153 +53,42 @@
               <a href="<?php echo $business->signup_url ?>" class="btn btn-info" <?php echo $colors['style']; ?> target="_blank">Claim it now!</a>
             </div>
           </div>  
-        </div>  
-
-              
-        <div class="tablesplit"></div>
-              
-
-          <div class="bh_tablerow">
-            <div class="bh_tablecell">
-            
-              <div class="bh_alert text-center">
-                <h4 class="h2">SUPPORT YOUR LOCAL BUSINESS</h4>
-                <a href="<?php echo $business->bizyhood_url ?>" class="btn btn-info" <?php echo $colors['style']; ?> target="_blank">Give Feedback</a>
-              </div>
-            </div>
-          </div>
-        </div>      
-    </div><!-- /.col-md-8 -->
-    
-  <?php } ?>
-  
-  <?php if ($business->claimed == 1) { ?>
-    
-    <div class="col-md-6">
-      <div class="column-inner">
-        <?php if($business->business_logo) {?>
-          <div itemprop="logo" class="bh_business-avatar pull-left">
-              <img src="<?php echo $business->business_logo->image->url ?>"/>
-          </div>
-        <?php } ?>
-        <?php if ( $business->description ) { ?>
-          <div itemprop="description"><?php echo wpautop($business->description); ?></div>
-        <?php } else { ?>
-          <div itemprop="description" class="text-muted"><?php echo wpautop('This business has not yet added a description.'); ?></div>
-        <?php } ?>
-      </div>
-      
-      <?php if ( $business->business_images ) { ?>
-      <div class="column-inner">
-        <div class="bh_image-gallery">
-            <div itemscope itemtype="http://schema.org/ImageGallery" class="bh_gallery-list clearfix">
-                <?php foreach($business->business_images as $business_image) { ?>
-                <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" class="bh_gallery-thumb">
-                    <a href="<?php echo $business_image->image->url; ?>" itemprop="contentUrl" data-size="<?php echo $business_image->image->width; ?>x<?php echo $business_image->image->height; ?>">
-                        <img src="<?php echo $business_image->image->url; ?>" itemprop="thumbnail" alt="<?php echo $business_image->title; ?>" />
-                    </a>
-                    <figcaption><?php echo $business_image->title; ?></figcaption>
-                </figure>
-                <?php } ?>
-            </div>
         </div>
-      </div>
-        <?php } ?>
-    </div><!-- /.col-md-6 -->
-  
-  <?php } ?>
-    
-    <div class="col-md-<?php echo $location_column_width; ?>">      
-      <div class="column-inner">
-        <div class="bh_section" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-            <h5>Location</h5>
-            <p class="bh_addresstext">
-              <span itemprop="streetAddress"><?php echo $business->address1 ?></span><br />
-              <span itemprop="addressLocality"><?php echo $business->locality ?></span>, 
-              <span itemprop="addressRegion"><?php echo $business->region ?></span> 
-              <span itemprop="postalCode"><?php echo $business->postal_code ?></span>
-            </p>
-        </div>
-        <div class="bh_section bh_map_wrap" itemprop="hasMap" itemtype="http://schema.org/Map">
-          <p class="bh_staticmap text-center" <?php echo $colors['style']; ?>>
-            <a class="clearfix" <?php echo $colors['stylefont']; ?> itemprop="url" href="https://maps.google.com?daddr=<?php echo $address; ?>" target="_blank">
-              <span itemprop="image">
-                <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?php echo $address; ?>&amp;zoom=14&amp;scale=2&amp;size=400x200&amp;maptype=roadmap&amp;markers=color:red%7C<?php echo $address; ?>&amp;key=<?php echo Bizyhood_Core::GOOGLEMAPS_API_KEY; ?>" />
-              </span>
-              <span class="bh_directions">Get Directions</span>
-            </a>
-          </p>
-        </div>
-      </div>
-      
-    </div>
-    
-    <?php if($show_third_column): ?>
-      <div class="col-md-3 business_hours">
-        <div class="column-inner">
-          <?php if($business->cta) { ?>
-            <p><a id="id_<?php echo $business->cta->name; ?>" class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo $business->cta->url; ?>"><?php echo $business->cta->label; ?></a></p>
-          <?php } ?>  
-          <?php if($business->telephone) { ?>
-            <p>Call us: <a href="tel:<?php echo $business->telephone; ?>" itemprop="telephone"><?php echo $business->telephone; ?></a></p>
-          <?php } ?>
-          <?php if($business->website) { ?>
-            <p class="truncate long">Visit: <a class="bh_site_link" itemprop="url" href="<?php echo $business->website; ?>" target="_blank"><?php echo str_replace(array('http://', 'https://', 'www.'), array('','',''), $business->website); ?></a></p>
-          <?php } ?>
-          <?php if($business->social_networks) { ?>
-            <?php foreach($business->social_networks as $social_network) { 
-                if (strtolower($social_network->name) == 'google') {
-                  $social_network->name = 'gplus';
-                }
-              ?>
-              <a class="bh_social_link" <?php echo $colors['style']; ?> itemprop="sameAs" href="<?php echo $social_network->url; ?>" title="<?php echo $social_network->name; ?>" target="_blank">
-                <span class="entypo-<?php echo strtolower($social_network->name); ?>"></span>
-              </a>
-            <?php } ?>
-          <?php } ?>
-        </div>
-      
-        <?php if($business->hours) { ?>
-        <div class="tablesplit"></div>
-        <div class="column-inner">
-            <div class="bh_section" itemprop="openingHoursSpecification" itemscope itemtype="http://schema.org/OpeningHoursSpecification">
-                <h5>Hours</h5>
-                <dl class="bh_dl-horizontal">
-                    <?php foreach($business->hours as $hour): ?>
-                    <dt><link itemprop="dayOfWeek" href="http://purl.org/goodrelations/v1#<?php echo $hour->day_name; ?>"><?php echo substr($hour->day_name,0,3); ?>:</dt>
-                    <dd>
-                      <?php 
-                        if($hour->hours_type == 1) { 
-                          foreach($hour->hours as $hoursindex => $hour_display) {
-                            
-                            // get the next pair of hours to the next line
-                            if ($hoursindex > 0) { ?>
-                              </dd><dt>&nbsp;</dt><dd>
-                            <?php } ?>
-                            <span itemprop="opens" content="<?php echo date('c',strtotime($hour_display[0])); ?>">
-                              <?php echo date('g:i a',strtotime($hour_display[0])); ?>
-                            </span>&ndash;
-                            <span itemprop="closes" content="<?php echo date('c',strtotime($hour_display[1])); ?>">
-                              <?php echo date('g:i a',strtotime($hour_display[1])); ?></span> 
-                          <?php }
-                        } else { 
-                          echo $hour->hours_type_name; 
-                        } 
-                      ?></dd>
-                    <?php endforeach; ?>
-                </dl>
-            </div>
-        </div>
-        <?php } ?>
-      </div>
-    <?php endif; ?>
+      </div>      
+    </div><!-- /.col-md-12 // unclaimed business-->
   </div><!-- /.row -->
+  <?php } ?>
   
-  <?php if ($business->claimed == 1) { ?>
+  
+  <?php if ($business->claimed == 1 && $show_first_row === true) { ?>
   
   <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
+  
+  
+    <?php if (isset($business->latest_promotion) && !empty($business->latest_promotion)) { ?>
+      <div class="col-md-<?php echo $top_columns; ?> latest_promotion bh_infobox">
+        <h3>Promotions</h3>
+        <div class="column-inner">
+            
+            <div class="bh_alert">
+              <h4><?php echo $business->latest_promotion->name; ?></h4>
+              <dl class="bh_dl-horizontal">
+                <dt>Date</dt><br />
+                <dd><?php echo Bizyhood_Utility::buildDateTextMicrodata($business->latest_promotion->start, $business->latest_promotion->end, 'promotion', 'promotions'); ?></dd>
+              </dl>
+              <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)).$business->bizyhood_id.'/'.$business->latest_promotion->identifier; ?>" title="<?php echo $business->latest_promotion->name; ?> details">View Details &rarr;</a>
+            </div>
+            
+            <a itemprop="url" class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)).$business->bizyhood_id.'/'; ?>" title="All <?php echo $business->name; ?> promotions">All Promotions</a>
+        </div>
+      </div>
+    <?php } ?>
+    
+  
+  
+  
     <?php if (isset($business->latest_event) && !empty($business->latest_event)) { ?>
-      <div class="col-md-3 latest_events bh_infobox event-wrapper" itemscope itemtype="http://schema.org/Event">
+      <div class="col-md-<?php echo $top_columns; ?> latest_events bh_infobox event-wrapper" itemscope itemtype="http://schema.org/Event">
             
         <h3>Upcoming Events</h3>
         <div class="column-inner">
@@ -233,7 +124,7 @@
     <?php } ?>
 
     <?php if (isset($business->news) && !empty($business->news)) { ?>
-      <div class="col-md-3 latest_news bh_infobox">
+      <div class="col-md-<?php echo $top_columns; ?> latest_news bh_infobox">
         <h3>In the news</h3>
         <div class="column-inner">
             
@@ -247,27 +138,8 @@
       </div>
     <?php } ?>
     
-    <?php if (isset($business->latest_promotion) && !empty($business->latest_promotion)) { ?>
-      <div class="col-md-3 latest_promotion bh_infobox">
-        <h3>Promotions</h3>
-        <div class="column-inner">
-            
-            <div class="bh_alert">
-              <h4><?php echo $business->latest_promotion->name; ?></h4>
-              <dl class="bh_dl-horizontal">
-                <dt>Date</dt><br />
-                <dd><?php echo Bizyhood_Utility::buildDateTextMicrodata($business->latest_promotion->start, $business->latest_promotion->end, 'promotion', 'promotions'); ?></dd>
-              </dl>
-              <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)).$business->bizyhood_id.'/'.$business->latest_promotion->identifier; ?>" title="<?php echo $business->latest_promotion->name; ?> details">View Details &rarr;</a>
-            </div>
-            
-            <a itemprop="url" class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)).$business->bizyhood_id.'/'; ?>" title="All <?php echo $business->name; ?> promotions">All Promotions</a>
-        </div>
-      </div>
-    <?php } ?>
-    
     <?php if (isset($business->latest_feedback) && !empty($business->latest_feedback)) { ?>
-      <div class="col-md-3 latest_feedback bh_infobox">
+      <div class="col-md-<?php echo $top_columns; ?> latest_feedback bh_infobox">
         <h3>Customer Feedback</h3>
         <div class="column-inner">
             
@@ -280,32 +152,150 @@
       </div>
     <?php } ?>
     
-    <?php 
-    // if not all 4 columns were used
-    if ($footer_columns > 0) {
-    ?>
-
-      <div class="col-md-<?php echo $footer_columns; ?> feedback_cta">        
-        <div class="bh_table">
-          <div class="bh_tablerow">
-            <div class="bh_tablecell">
-              <div class="bh_alert text-center">
-                <h4 class="h2">SUPPORT YOUR LOCAL BUSINESS</h4>
-                <a href="<?php echo $business->feedback_url ?>" class="btn btn-info" <?php echo $colors['style']; ?> target="_blank">Give Feedback</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-    <?php
-    }
-    ?>
-    
   </div><!-- /.row -->
   <?php } ?>
   
-  <div class="row">
+  
+    
+    
+  <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
+      <?php if($show_contact_details) { ?>
+        <div class="col-md-<?php echo ($business->hours ? '3' : '6'); ?> business_contact">
+          <div class="column-inner">
+            <?php if($business->cta) { ?>
+              <p><a id="id_<?php echo $business->cta->name; ?>" class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo $business->cta->url; ?>"><?php echo $business->cta->label; ?></a></p>
+            <?php } ?>  
+            <?php if($business->telephone) { ?>
+              <p>Call us: <a href="tel:<?php echo $business->telephone; ?>" itemprop="telephone"><?php echo $business->telephone; ?></a></p>
+            <?php } ?>
+            <?php if($business->website) { ?>
+              <p class="truncate long">Visit: <a class="bh_site_link" itemprop="url" href="<?php echo $business->website; ?>" target="_blank"><?php echo str_replace(array('http://', 'https://', 'www.'), array('','',''), $business->website); ?></a></p>
+            <?php } ?>
+            <?php if($business->social_networks) { ?>
+              <p class="social_icons_wrap">
+              <?php foreach($business->social_networks as $social_network) { 
+                  if (strtolower($social_network->name) == 'google') {
+                    $social_network->name = 'gplus';
+                  }
+                ?>
+                <a class="bh_social_link" <?php echo $colors['style']; ?> itemprop="sameAs" href="<?php echo $social_network->url; ?>" title="<?php echo $social_network->name; ?>" target="_blank">
+                  <span class="entypo-<?php echo strtolower($social_network->name); ?>"></span>
+                </a>
+              <?php } ?>
+              </p>
+            <?php } ?>
+          </div>
+        </div>
+      <?php } ?>
+      
+        <?php if($business->hours) { ?>
+        <div class="col-md-<?php echo ($show_contact_details == true ? '3' : '6'); ?> business_hours">
+          <div class="column-inner">
+            <div class="bh_section" itemprop="openingHoursSpecification" itemscope itemtype="http://schema.org/OpeningHoursSpecification">
+                <h5>Hours</h5>
+                <dl class="bh_dl-horizontal">
+                    <?php foreach($business->hours as $hour): ?>
+                    <dt><link itemprop="dayOfWeek" href="http://purl.org/goodrelations/v1#<?php echo $hour->day_name; ?>"><?php echo substr($hour->day_name,0,3); ?>:</dt>
+                    <dd>
+                      <?php 
+                        if($hour->hours_type == 1) { 
+                          foreach($hour->hours as $hoursindex => $hour_display) {
+                            
+                            // get the next pair of hours to the next line
+                            if ($hoursindex > 0) { ?>
+                              </dd><dt>&nbsp;</dt><dd>
+                            <?php } ?>
+                            <span itemprop="opens" content="<?php echo date('c',strtotime($hour_display[0])); ?>">
+                              <?php echo date('g:i a',strtotime($hour_display[0])); ?>
+                            </span>&ndash;
+                            <span itemprop="closes" content="<?php echo date('c',strtotime($hour_display[1])); ?>">
+                              <?php echo date('g:i a',strtotime($hour_display[1])); ?></span> 
+                          <?php }
+                        } else { 
+                          echo $hour->hours_type_name; 
+                        } 
+                      ?></dd>
+                    <?php endforeach; ?>
+                </dl>
+            </div>
+          </div>
+        </div>
+        <?php } ?>
+        
+        
+        <div class="col-md-<?php echo $location_column_width; ?>">      
+          <div class="column-inner">
+            <div class="bh_section" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                <h5>Location</h5>
+                <p class="bh_addresstext">
+                  <span itemprop="streetAddress"><?php echo $business->address1 ?></span><br />
+                  <span itemprop="addressLocality"><?php echo $business->locality ?></span>, 
+                  <span itemprop="addressRegion"><?php echo $business->region ?></span> 
+                  <span itemprop="postalCode"><?php echo $business->postal_code ?></span>
+                </p>
+            </div>
+            <div class="bh_section bh_map_wrap" itemprop="hasMap" itemtype="http://schema.org/Map">
+              <p class="bh_staticmap text-center" <?php echo $colors['style']; ?>>
+                <a class="clearfix" <?php echo $colors['stylefont']; ?> itemprop="url" href="https://maps.google.com?daddr=<?php echo $address; ?>" target="_blank">
+                  <span itemprop="image">
+                    <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?php echo $address; ?>&amp;zoom=14&amp;scale=2&amp;size=400x200&amp;maptype=roadmap&amp;markers=color:red%7C<?php echo $address; ?>&amp;key=<?php echo Bizyhood_Core::GOOGLEMAPS_API_KEY; ?>" />
+                  </span>
+                  <span class="bh_directions">Get Directions</span>
+                </a>
+              </p>
+            </div>
+          </div>
+          
+        </div>
+        
+        
+  </div><!-- /.row -->
+      
+      
+  <?php if ($business->claimed == 1) { ?>
+  <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
+    
+    <div class="col-md-12">
+      <div class="column-inner">
+        <?php if($business->business_logo) {?>
+          <div itemprop="logo" class="bh_business-avatar pull-left">
+              <img src="<?php echo $business->business_logo->image->url ?>"/>
+          </div>
+        <?php } ?>
+        <?php if ( $business->description ) { ?>
+          <div itemprop="description"><?php echo wpautop($business->description); ?></div>
+        <?php } else { ?>
+          <div itemprop="description" class="text-muted"><?php echo wpautop('This business has not yet added a description.'); ?></div>
+        <?php } ?>
+      </div>
+      
+      <?php if ( $business->business_images ) { ?>
+          <div class="column-inner">
+            <div class="bh_image-gallery">
+                <div itemscope itemtype="http://schema.org/ImageGallery" class="bh_gallery-list clearfix">
+                    <?php foreach($business->business_images as $business_image) { ?>
+                    <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" class="bh_gallery-thumb">
+                        <a href="<?php echo $business_image->image->url; ?>" itemprop="contentUrl" data-size="<?php echo $business_image->image->width; ?>x<?php echo $business_image->image->height; ?>">
+                            <img src="<?php echo $business_image->image->url; ?>" itemprop="thumbnail" alt="<?php echo $business_image->title; ?>" />
+                        </a>
+                        <figcaption><?php echo $business_image->title; ?></figcaption>
+                    </figure>
+                    <?php } ?>
+                </div>
+            </div>
+          </div>
+            <?php } ?>
+        </div><!-- /.col-md-12 -->
+      
+      
+  </div><!-- /.row -->
+  <?php } ?>
+  
+</div><!-- /.rowgrid_wrap -->
+  
+  
+  
+  <div class="row zero-gutter">
     <div class="col-md-9">
       <?php 
         if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'after' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') {

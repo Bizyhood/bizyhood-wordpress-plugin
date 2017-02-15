@@ -86,33 +86,36 @@ a.facet_helper {
 .bh_staticmap, .bh_staticmap a {
   color: #ffffff;
 }
-.row.rowgrid {
-  border-left: 1px solid rgba(0,0,0,.25);
-  border-right: 1px solid rgba(0,0,0,.25);
-  border-top: 1px solid rgba(0,0,0,.25);
-}
 .bh_infoboxes h3, .bh_infoboxes .bh_infobox  h3 {
-  background-color: #000;
-  color: #fff;
-  font-size: 16px;
+  background-color: transparent;
+  font-size: 20px;
   margin: 0;
   width: 100%;
   padding: 5px;
-  text-align: center;
-  font-weight: normal;
+  text-align: left;
+  font-weight: bold;
 }
-.row.rowgrid.bh_infoboxes, .unclaimed .row.main_business_info {
+.unclaimed .row.main_business_info {
   border-bottom: 1px solid rgba(0,0,0,.25);
 }
-.row.rowgrid [class*="col-"] {
-  border-right: 1px solid rgba(0,0,0,.25);
+
+.bizyhood_wrap .row.rowgrid {
+  border-bottom: 1px solid rgba(0,0,0,.25);
+  border-top: 0;
 }
-.row.rowgrid [class*="col-"]:last-child {
-  border-right: 0;
+.bizyhood_wrap .rowgrid_wrap .row.rowgrid:first-child {
+  border-top: 1px solid rgba(0,0,0,.25);
+}
+.bizyhood_wrap .row.rowgrid [class*="col-"] {
+  border-right: 1px solid rgba(0,0,0,.25);
+  border-left: 0;
+}
+.bizyhood_wrap .row.rowgrid [class*="col-"]:first-child {
+  border-left: 1px solid rgba(0,0,0,.25);
 }
 
-.column-inner {
-  margin: 15px;
+.bizyhood_wrap .column-inner {
+  padding: 15px;
 }
 .feedback_cta .bh_tablecell, .claim_cta .bh_tablecell {
   padding: 15px;
@@ -403,4 +406,7 @@ h3.bh_category {
 }
 @media (max-width: 768px) {
   .bh_gallery-list .bh_gallery-thumb {width:50%;}
+  .bizyhood_wrap .row.rowgrid [class*="col-"] {
+    border-left: 1px solid rgba(0,0,0,.25);
+  }
 }
