@@ -146,6 +146,21 @@
                     
                     <div class="option">
                         <div class="control-label">
+                            <div class="name nomargin">Business Guide Page</div>
+                            <div class="desc nomargin">
+                                The page that will be used to display all paying businesses. Must include the [bh-guide] shortcode.<br />
+                            </div>
+                        </div>
+                        <div class="control-container">
+                            <?php wp_dropdown_pages( array('name' => 'guide_page_id', 'selected' => $guide_page_id) ) ?>
+                        </div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    
+                    <div class="break"></div>
+                    
+                    <div class="option">
+                        <div class="control-label">
                             <div class="name nomargin">Business Detail Page button background color</div>
                             <div class="desc nomargin">
                                 

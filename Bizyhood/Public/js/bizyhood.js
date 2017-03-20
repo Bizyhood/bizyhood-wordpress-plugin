@@ -40,6 +40,7 @@ jQuery(function($){
              signup_page_id: $('#signup_page_id').val(),
              promotions_page_id: $('#promotions_page_id').val(),
              events_page_id: $('#events_page_id').val(),
+             guide_page_id: $('#guide_page_id').val(),
              btn_bg_color: $('#bh_btn_bg_color').val(),
              btn_font_color: $('#bh_btn_font_color').val(),
              bh_facebook: $('#bh_facebook').is(':checked'),

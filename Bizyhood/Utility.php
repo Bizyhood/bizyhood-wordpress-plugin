@@ -67,7 +67,8 @@ class Bizyhood_Utility
         is_page(self::getOption(Bizyhood_Core::KEY_MAIN_PAGE_ID)) || 
         is_page(self::getOption(Bizyhood_Core::KEY_OVERVIEW_PAGE_ID)) || 
         is_page(self::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)) || 
-        is_page(self::getOption(Bizyhood_Core::KEY_EVENTS_PAGE_ID))
+        is_page(self::getOption(Bizyhood_Core::KEY_EVENTS_PAGE_ID)) || 
+        is_page(self::getOption(Bizyhood_Core::KEY_GUIDE_PAGE_ID))
       ) {
         return true;
       }

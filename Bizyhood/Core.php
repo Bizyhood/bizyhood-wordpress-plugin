@@ -40,6 +40,7 @@ class Bizyhood_Core
     CONST KEY_SIGNUP_PAGE_ID      = 'Bizyhood_Signup_page_ID';
     CONST KEY_PROMOTIONS_PAGE_ID  = 'Bizyhood_Promotions_page_ID';
     CONST KEY_EVENTS_PAGE_ID      = 'Bizyhood_Events_page_ID';
+    CONST KEY_GUIDE_PAGE_ID       = 'Bizyhood_Guide_page_ID';
     CONST KEY_INSTALL_REPORT      = 'Bizyhood_Installed';
     CONST API_MAX_LIMIT           = 250;
     CONST BIZYBOX_MAX_LIMIT       = 25;
@@ -196,6 +197,34 @@ class Bizyhood_Core
             }
         }
         
+        // Create the guide page
+        $business_guide_page         = Bizyhood_Utility::getOption(self::KEY_GUIDE_PAGE_ID);
+        $business_guide_page_exists  = false;
+        
+        // check if the id exists and if the page has not been deleted
+        if (intval($business_guide_page) > 0 && get_post_field('post_status', $business_guide_page) == 'publish') {
+          $business_guide_page_exists = true;
+        }
+        
+        if ( intval($business_guide_page) == 0 || $business_guide_page_exists === false )
+        {
+            $business_guide_page = array(
+                'post_title'     => 'Business Guide',
+                'post_type'      => 'page',
+                'post_name'      => 'business-guide',
+                'post_content'   => '[bh-search]<h3>Featured Businesses</h3>[bh-guide]',
+                'post_status'    => 'publish',
+                'comment_status' => 'closed',
+                'ping_status'    => 'closed',
+                'post_author'    => 1,
+                'menu_order'     => 0,
+            );
+            $business_guide_page_id = wp_insert_post( $business_guide_page );
+            if ($business_guide_page_id) {
+              Bizyhood_Utility::setOption(self::KEY_GUIDE_PAGE_ID, $business_guide_page_id);
+            }
+        }
+        
         
         // move logs to uploads if they are still on the old location
         
@@ -273,6 +302,7 @@ class Bizyhood_Core
         add_shortcode('bh-businesses', array($this, 'businesses_shortcode'));
         add_shortcode('bh-promotions', array($this, 'promotions_shortcode'));
         add_shortcode('bh-events', array($this, 'events_shortcode'));
+        add_shortcode('bh-guide', array($this, 'guide_shortcode'));
         add_shortcode('bh-search', array($this, 'search_shortcode'));
         add_filter('the_content', array($this, 'postTemplate'), 100);
         add_action('wp_ajax_bizyhood_save_settings', array('Bizyhood_Ajax', 'Bizyhood_saveSettings'));
@@ -1171,6 +1201,7 @@ class Bizyhood_Core
         $data['signup_page_id']     = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
         $data['promotions_page_id'] = Bizyhood_Utility::getOption(self::KEY_PROMOTIONS_PAGE_ID);
         $data['events_page_id']     = Bizyhood_Utility::getOption(self::KEY_EVENTS_PAGE_ID);
+        $data['guide_page_id']      = Bizyhood_Utility::getOption(self::KEY_GUIDE_PAGE_ID);
         $data['btn_bg_color']       = Bizyhood_Utility::getOption(self::BTN_BG_COLOR);
         $data['btn_font_color']     = Bizyhood_Utility::getOption(self::BTN_FONT_COLOR);
         $data['bh_facebook']        = Bizyhood_Utility::getOption(self::ICON_FACEBOOK);
@@ -1194,6 +1225,10 @@ class Bizyhood_Core
         if(get_category_by_slug(get_post_field('post_name', Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID))))
         {
             $data['errors'][] = 'You have a category named "'. get_post_field('post_name', Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID)) .'", which will interfere with the business directory if you plan to use it. You must rename the slug of this category.';
+        }
+        if(get_category_by_slug(get_post_field('post_name', Bizyhood_Utility::getOption(self::KEY_GUIDE_PAGE_ID))))
+        {
+            $data['errors'][] = 'You have a category named "'. get_post_field('post_name', Bizyhood_Utility::getOption(self::KEY_GUIDE_PAGE_ID)) .'", which will interfere with the business directory if you plan to use it. You must rename the slug of this category.';
         }
 
         Bizyhood_View::load('admin/admin', $data);
@@ -1611,6 +1646,52 @@ class Bizyhood_Core
       
     }
     
+    public function guide_shortcode($attrs) {
+      
+      global $wp_query;
+      
+      $filtered_attributes = shortcode_atts( array(
+        'paged'     => 1,
+        'verified'  => true,
+        'paid'      => true,
+        'ps'        => self::API_MAX_LIMIT
+      ), $attrs );
+      
+      // init variable
+      $business_name = '';
+      
+      $authetication = Bizyhood_oAuth::set_oauth_temp_data();
+      if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
+        return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
+      }
+      
+      $q = $this->businesses_information($filtered_attributes);
+        
+      if (isset($q['error'])) {
+        $error = $q['error'];
+        return Bizyhood_View::load( 'listings/error', array( 'error' => $error->get_error_message()), true );
+      }
+      
+      $page = $q['page'];
+     
+      $businesses     = $q['businesses'];
+      $total_count    = $q['total_count'];
+      $page_size      = $q['page_size'];
+      $page_count     = 0;
+      
+      if ($page_size > 0) {
+          $page_count = ( $total_count / $page_size ) + ( ( $total_count % $page_size == 0 ) ? 0 : 1 );
+      }
+      $pagination_args = array(
+          'total'              => $page_count,
+          'current'            => $page,
+          'type'               => 'list',
+      );
+      $view_business_page_id = Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID);
+      
+      return Bizyhood_View::load( 'listings/guide', array( 'pagination_args' => $pagination_args, 'businesses' => $businesses, 'view_business_page_id' => $view_business_page_id ), true );
+      
+    }
     public function events_shortcode($attrs) {
       
       global $wp_query;

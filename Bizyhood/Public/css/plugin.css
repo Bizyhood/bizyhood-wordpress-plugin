@@ -384,6 +384,60 @@ h3.bh_category {
 .bh_share_icons li.bh_linkedin a { color: #3371b7; }
 .bh_share_icons li.bh_mail a { color: #000000; }
 
+ul.bh_list { 
+  margin: 0; 
+  padding: 0; 
+  list-style: none; 
+}
+
+ul.bh_list .bh_list_item {
+  border-top: 1px solid #ccc;
+  list-style: none;
+  padding: 5px 0;
+  vertical-align: middle;
+}
+ul.bh_list .bh_list_item:last-child {
+  border-bottom: 1px solid #ccc;
+}
+ul.bh_list .bh_list_item p {
+  padding: 0;
+  margin: 0;
+}
+ul.bh_list .bh_list_item img {
+  max-height: 74px;
+  max-width: 20%;
+  height: auto;
+  width: auto;
+}
+
+.bh-catslist { display: block; }
+.bh-catslist li {
+  display: inline-block;
+  margin-right: 12px;
+  margin-bottom: 18px;
+}
+.bh-catslist li a {
+  display: inline-block;
+  padding: 6px 8px;
+  font-weight: bold;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  color: #ccc;
+  background-color: #fff;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+.bh-catslist li a:hover {
+  background-color: #ccc;
+  color: #fff;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
 @media (max-width: 992px) {
   .bh_gallery-list .bh_gallery-thumb {width:33%;}
   .row.rowgrid [class*="col-"] {
