@@ -121,15 +121,20 @@ class bizy_mtm_widget extends WP_Widget {
       </div>
       <!-- business info END -->
       <?php
+      if ($instance['see_all_link'] != '') {
+        $see_all_link = $instance['see_all_link'];
+      } else {
+        $see_all_link = get_permalink(get_option('Bizyhood_Main_page_ID'));
+      }
       echo '
         <div class="mtm_fields list_your_business arrow_box td_div" '. ($color_cta_back != '' ? 'style="background-color: '. $color_cta_back .'; border-color: '. $color_cta_back .';"' : '') .'>
           
-            <a href="'. get_permalink(get_option('Bizyhood_Main_page_ID')) .'" title="'. __('All businesses', 'bizyhood') .'" '. ($color_cta_font != '' ? 'style="color: '. $color_cta_font .';"' : '') .' >
+            <a href="'. $see_all_link .'" title="'. __('All businesses', 'bizyhood') .'" '. ($color_cta_font != '' ? 'style="color: '. $color_cta_font .';"' : '') .' >
               <span class="link_row row1" '. ($color_cta_font != '' ? 'style="color: '. $color_cta_font .';"' : '') .'>
                 '. __(esc_attr(substr($instance['row1'], 0, $this->limitchars_header)), 'bizyhood') .'
               </span>
             </a>
-            <a href="'. get_permalink(get_option('Bizyhood_Main_page_ID')) .'" title="'. __('All businesses', 'bizyhood') .'" '. ($color_cta_font != '' ? 'style="color: '. $color_cta_font .';"' : '') .' >
+            <a href="'. $see_all_link .'" title="'. __('All businesses', 'bizyhood') .'" '. ($color_cta_font != '' ? 'style="color: '. $color_cta_font .';"' : '') .' >
               <span class="link_row row2" '. ($color_cta_font != '' ? 'style="color: '. $color_cta_font .';"' : '') .'>
                 '. __(esc_attr(substr($instance['row2'], 0, $this->limitchars)), 'bizyhood') .'
               </span>
@@ -158,6 +163,7 @@ class bizy_mtm_widget extends WP_Widget {
 		$intro = ! empty( $instance['intro'] ) ? $instance['intro'] : '';
 		$row1 = ! empty( $instance['row1'] ) ? $instance['row1'] : 'Want to see all our business listings?';
 		$row2 = ! empty( $instance['row2'] ) ? $instance['row2'] : 'CLICK HERE';
+		$see_all_link = ! empty( $instance['see_all_link'] ) ? $instance['see_all_link'] : '';
 		$color_widget_back = ! empty( $instance['color_widget_back'] ) ? $instance['color_widget_back'] : self::$default_colors['color_widget_back'];
 		$color_cta_back = ! empty( $instance['color_cta_back'] ) ? $instance['color_cta_back'] : self::$default_colors['color_cta_back'];
 		$color_cta_font = ! empty( $instance['color_cta_font'] ) ? $instance['color_cta_font'] : self::$default_colors['color_cta_font'];
@@ -210,6 +216,11 @@ class bizy_mtm_widget extends WP_Widget {
       <label for="<?php echo $this->get_field_id( 'row2' ); ?>"><?php _e( 'Link text subheader:' ); ?></label> 
       <input class="widefat" maxlength="<?php echo $this->limitchars; ?>" id="<?php echo $this->get_field_id( 'row2' ); ?>" name="<?php echo $this->get_field_name( 'row2' ); ?>" type="text" value="<?php echo esc_attr( $row2 ); ?>">
       <small><?php echo $this->limitchars .' '. __('characters max', 'bizyhood' ); ?></small>
+    </p>
+		<p>
+      <label for="<?php echo $this->get_field_id( 'see_all_link' ); ?>"><?php _e( 'Link URL' ); ?></label> 
+      <input class="widefat" id="<?php echo $this->get_field_id( 'see_all_link' ); ?>" name="<?php echo $this->get_field_name( 'see_all_link' ); ?>" type="text" value="<?php echo esc_attr( $see_all_link ); ?>">
+      <small><?php echo __('Leave empty to link to the business directory page', 'bizyhood' ); ?></small>
     </p>
 
     <h4>Colors</h4>
@@ -293,6 +304,7 @@ class bizy_mtm_widget extends WP_Widget {
 		$instance['intro'] = ( ! empty( $new_instance['intro'] ) ) ? strip_tags( $new_instance['intro'] ) : '';
 		$instance['row1'] = ( ! empty( $new_instance['row1'] ) ) ? strip_tags( $new_instance['row1'] ) : '';
 		$instance['row2'] = ( ! empty( $new_instance['row2'] ) ) ? strip_tags( $new_instance['row2'] ) : '';
+		$instance['see_all_link'] = ( ! empty( $new_instance['see_all_link'] ) ) ? strip_tags( $new_instance['see_all_link'] ) : '';
     
     // colors
     $instance['color_widget_back']    = ( ! empty( $new_instance['color_widget_back'] ) ) ? strip_tags( $new_instance['color_widget_back'] ) : '';
