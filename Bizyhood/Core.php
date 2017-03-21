@@ -208,11 +208,25 @@ class Bizyhood_Core
         
         if ( intval($business_guide_page) == 0 || $business_guide_page_exists === false )
         {
+          $main_page_url = get_permalink(Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID));
+          
+          $default_categories_lists = '
+            <h2>Popular Categories</h2>
+            <ul class="bh-catslist">
+              <li><a href="'.$main_page_url.'?keywords=Automobile">Auto Care</a></li>
+              <li><a href="'.$main_page_url.'?keywords=Child Care">Childcare</a></li>
+              <li><a href="'.$main_page_url.'?keywords=Entertainment">Entertainment</a></li>
+              <li><a href="'.$main_page_url.'?keywords=Restaurants">Food &amp; Restaurants</a></li>
+              <li><a href="'.$main_page_url.'?keywords=Home,Real Estate">Home</a></li>
+              <li><a href="'.$main_page_url.'?keywords=Fitness,Recreation">Recreation</a></li>
+            </ul>
+          ';
+          
             $business_guide_page = array(
                 'post_title'     => 'Business Guide',
                 'post_type'      => 'page',
                 'post_name'      => 'business-guide',
-                'post_content'   => '[bh-search]<h3>Featured Businesses</h3>[bh-guide]',
+                'post_content'   => '[bh-search]<h2>Featured Businesses</h2>[bh-guide]'.$default_categories_lists,
                 'post_status'    => 'publish',
                 'comment_status' => 'closed',
                 'ping_status'    => 'closed',

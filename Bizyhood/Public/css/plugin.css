@@ -387,7 +387,8 @@ h3.bh_category {
 ul.bh_list { 
   margin: 0; 
   padding: 0; 
-  list-style: none; 
+  list-style: none;
+  margin-bottom: 20px;
 }
 
 ul.bh_list .bh_list_item {
@@ -410,7 +411,7 @@ ul.bh_list .bh_list_item img {
   width: auto;
 }
 
-.bh-catslist { display: block; }
+.bh-catslist { display: block; margin-left: 0; margin-bottom: 20px; padding: 0; }
 .bh-catslist li {
   display: inline-block;
   margin-right: 12px;
@@ -421,8 +422,8 @@ ul.bh_list .bh_list_item img {
   padding: 6px 8px;
   font-weight: bold;
   font-size: 14px;
-  border: 1px solid #ccc;
-  color: #ccc;
+  border: 1px solid #555;
+  color: #555;
   background-color: #fff;
   -moz-transition: all 0.5s;
   -webkit-transition: all 0.5s;
@@ -430,7 +431,7 @@ ul.bh_list .bh_list_item img {
   transition: all 0.5s;
 }
 .bh-catslist li a:hover {
-  background-color: #ccc;
+  background-color: #333;
   color: #fff;
   -moz-transition: all 0.5s;
   -webkit-transition: all 0.5s;
