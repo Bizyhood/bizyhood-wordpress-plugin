@@ -124,7 +124,7 @@ class bizy_mtm_widget extends WP_Widget {
       if ($instance['see_all_link'] != '') {
         $see_all_link = $instance['see_all_link'];
       } else {
-        $see_all_link = get_permalink(get_option('Bizyhood_Main_page_ID'));
+        $see_all_link = get_permalink(get_option('Bizyhood_Guide_page_ID'));
       }
       echo '
         <div class="mtm_fields list_your_business arrow_box td_div" '. ($color_cta_back != '' ? 'style="background-color: '. $color_cta_back .'; border-color: '. $color_cta_back .';"' : '') .'>
@@ -220,7 +220,7 @@ class bizy_mtm_widget extends WP_Widget {
 		<p>
       <label for="<?php echo $this->get_field_id( 'see_all_link' ); ?>"><?php _e( 'Link URL' ); ?></label> 
       <input class="widefat" id="<?php echo $this->get_field_id( 'see_all_link' ); ?>" name="<?php echo $this->get_field_name( 'see_all_link' ); ?>" type="text" value="<?php echo esc_attr( $see_all_link ); ?>">
-      <small><?php echo __('Leave empty to link to the business directory page', 'bizyhood' ); ?></small>
+      <small><?php echo __('Leave empty to link to the business guide page', 'bizyhood' ); ?></small>
     </p>
 
     <h4>Colors</h4>
