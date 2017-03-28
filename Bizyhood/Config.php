@@ -140,4 +140,4 @@ class Bizyhood_Config
     }
 }
 
-define('BIZYHOOD_VERSION', '1.2.8');
+define('BIZYHOOD_VERSION', '1.2.9');
