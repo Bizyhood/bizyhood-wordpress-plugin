@@ -98,9 +98,13 @@ class Bizyhood_oAuth
      if (get_transient('bizyhood_oauth_data') === false ) {
         $params = array();
         $client = new OAuth2\Client($provider['clientId'], $provider['clientSecret']);
-        $response = $client->getAccessToken($provider['urlAccessToken'], 'client_credentials', $params);
+        try {
+            $response = $client->getAccessToken($provider['urlAccessToken'], 'client_credentials', $params);
+        } catch (Exception $e) {
+            $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
+            return $error;
+        }
 
-        
         if ( is_array($response) && !empty($response) && isset($response['code']) && $response['code'] == 200 && (isset($response['result']['access_token']) && strlen($response['result']['access_token']) > 0)) {
           
           $client->setAccessToken($response['result']['access_token']);
