@@ -3,7 +3,7 @@
 Plugin Name: Bizyhood
 Plugin URI: https://bizyhood.com
 Description: Integrates Bizyhood for Publishers engagement and discovery platform to your hyperlocal digital publishing site
-Version: 1.2.8
+Version: 1.2.9
 Author: Bizyhood
 Author URI: http://bizyhood.com
 */
