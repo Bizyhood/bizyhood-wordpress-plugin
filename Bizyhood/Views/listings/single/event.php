@@ -123,5 +123,10 @@
   }
 ?>
 <script type="text/javascript">
-    analytics.page('Business Event', {"path":location.pathname});
+    analytics.page('Business Event', {
+        path: location.pathname,
+        business_id: '<?php echo $event['business_identifier']; ?>',
+        business_name: `<?php echo $event['business_name']; ?>`,
+        event_identifier: '<?php echo $event['identifier']; ?>'
+    });
 </script>

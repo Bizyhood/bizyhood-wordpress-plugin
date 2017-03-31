@@ -361,11 +361,16 @@
 </div>
 <?php } ?>
 <script type="text/javascript">
-    analytics.page('Business Overview');
+    analytics.page('Business Overview', {
+        business_id: '<?php echo $business->bizyhood_id; ?>',
+        business_name: '<?php echo $business->name; ?>'
+    });
     <?php if($business->cta) { ?>
     var cta_link = document.getElementById('id_<?php echo $business->cta->name; ?>');
     analytics.trackLink(cta_link, 'Clicked Business CTA', {
-        cta: '<?php echo $business->cta->name; ?>'
+        cta: '<?php echo $business->cta->name; ?>',
+        business_id: '<?php echo $business->business_id; ?>',
+        business_name: '<?php echo $business->name; ?>'
     });
     <?php } ?>  
     
