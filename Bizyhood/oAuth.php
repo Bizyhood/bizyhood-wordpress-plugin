@@ -101,8 +101,11 @@ class Bizyhood_oAuth
         try {
             $response = $client->getAccessToken($provider['urlAccessToken'], 'client_credentials', $params);
         } catch (Exception $e) {
-            $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
-            return $error;
+            if (Bizyhood_Utility::is_bizyhood_page()) {
+                return new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
+            } else {
+                return false;
+            }
         }
 
         if ( is_array($response) && !empty($response) && isset($response['code']) && $response['code'] == 200 && (isset($response['result']['access_token']) && strlen($response['result']['access_token']) > 0)) {
