@@ -84,7 +84,14 @@
       ?>
       <div class="row bh_event-content single_event_info">
         <div class="col-md-8">
-          <span class="event_description" itemprop="description"><?php echo $event['description']; ?></span>
+            <?php if (isset($event['image']) && !empty($event['image'])) { ?>
+            <div class="col-md-4">
+                <img src="<?php echo $event['image']['url'] ?>"/>
+            </div>
+            <?php } ?>
+            <div<?php if (isset($event['image']) && !empty($event['image'])) { ?> class="col-md-8"<?php } ?>>
+                <span class="event_description" itemprop="description"><?php echo $event['description']; ?></span>
+            </div>
         </div>
         <div class="col-md-4">
           <dl class="bh_dl-horizontal">

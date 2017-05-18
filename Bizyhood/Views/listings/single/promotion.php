@@ -39,7 +39,7 @@
 
           
           
-      <div class="row no-gutter">
+        <div class="row no-gutter">
       
       <?php
       // removing until we have the data
@@ -51,9 +51,12 @@
         </div>
       */
       ?>
-        <div class="col-sm-12">
-          
-          
+            <?php if (isset($promotion['image']) && !empty($promotion['image'])): ?>
+            <div class="col-sm-3">
+                <img src="<?php echo $promotion['image']['url'] ?>"/>
+            </div>
+            <?php endif; ?>
+        <div class="<?php if (isset($promotion['image']) && !empty($promotion['image'])): ?>col-sm-9<?php else: ?>col-sm-12<?php endif; ?>">
           <span class="promotion_description"><?php echo $promotion['details']; ?></span>
           <br /><br />
           <dl class="bh_dl-horizontal">
