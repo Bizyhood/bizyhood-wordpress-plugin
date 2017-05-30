@@ -5,7 +5,7 @@
           <?php echo $error; ?>
           </p>
           <p class="linkback">
-            <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_MAIN_PAGE_ID)); ?>" title="Return to the business directory">Return to the business directory</a>
+            <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_GUIDE_PAGE_ID)); ?>" title="Return to the business guide">Return to the business guide</a>
           </p>
         </div>
     </div>
