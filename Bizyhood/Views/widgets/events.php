@@ -66,9 +66,32 @@ class bizy_events_widget extends WP_Widget {
     // cache the results
     $events = Bizyhood_Core::get_cache_value('bizyhood_events_widget', 'response_json', 'business_details_information', $atts, 'events', false);
     
+    
+    $intro = ! empty( $instance['intro'] ) ? trim($instance['intro']) : '';
+    
+    $color_widget_back = ! empty( $instance['color_widget_back'] ) ? $instance['color_widget_back'] : '';
+		$color_cta_back = ! empty( $instance['color_cta_back'] ) ? $instance['color_cta_back'] : '';
+		$color_cta_font = ! empty( $instance['color_cta_font'] ) ? $instance['color_cta_font'] : '';	
+    $color_label_font = ! empty( $instance['color_label_font'] ) ? $instance['color_label_font'] : '';
+    $color_event_font = ! empty( $instance['color_event_font'] ) ? $instance['color_event_font'] : '';
+    $events_page = ! empty( $instance['events_page'] ) ? $instance['events_page'] : '';
+    $logo_size = ! empty( $instance['logo_size'] ) ? $instance['logo_size'] : 'large';
+    
     // if no events are found exit with an error message
     if (empty($events) || $events === false || $events === NULL) {
-      echo __('There are no events to display', 'bizyhood');
+      ?>
+      
+      <div class="row bh_business-header">
+          <div class="col-md-12 bh_business-header-title">	
+              <div class="bh_noresults" <?php echo ($color_widget_back != '' ? 'style="background-color: '. $color_widget_back .'; border-color: '. $color_widget_back .';"' : ''); ?>>
+                <p class="linkback" <?php echo ($color_label_font != '' ? 'style="color: '. $color_label_font .'"' : ''); ?>>
+                  <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_SIGNUP_PAGE_ID)); ?>" title="Sign up">Business Owners - Add your Events here!</a>
+                </p>
+              </div>
+          </div>
+      </div>
+      
+      <?php
       echo $args['after_widget'];
       return;
     }
@@ -105,15 +128,7 @@ class bizy_events_widget extends WP_Widget {
     }
     
     
-    $intro = ! empty( $instance['intro'] ) ? trim($instance['intro']) : '';
-    
-    $color_widget_back = ! empty( $instance['color_widget_back'] ) ? $instance['color_widget_back'] : '';
-		$color_cta_back = ! empty( $instance['color_cta_back'] ) ? $instance['color_cta_back'] : '';
-		$color_cta_font = ! empty( $instance['color_cta_font'] ) ? $instance['color_cta_font'] : '';	
-    $color_label_font = ! empty( $instance['color_label_font'] ) ? $instance['color_label_font'] : '';
-    $color_event_font = ! empty( $instance['color_event_font'] ) ? $instance['color_event_font'] : '';
-    $events_page = ! empty( $instance['events_page'] ) ? $instance['events_page'] : '';
-    $logo_size = ! empty( $instance['logo_size'] ) ? $instance['logo_size'] : 'large';
+
     
 		
     $widget_backcolor = ($color_widget_back != '' ? 'style="background-color: '. $color_widget_back .'; border-color: '. $color_widget_back .';"' : '');

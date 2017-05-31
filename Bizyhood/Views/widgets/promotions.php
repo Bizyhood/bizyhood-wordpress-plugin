@@ -64,11 +64,32 @@ class bizy_promotions_widget extends WP_Widget {
     $atts = array();
         
     // cache the results
-    $promotion = Bizyhood_Core::get_cache_value('bizyhood_promotions_widget', 'response_json', 'business_details_information', $atts, 'promotions', true);   
+    $promotion = Bizyhood_Core::get_cache_value('bizyhood_promotions_widget', 'response_json', 'business_details_information', $atts, 'promotions', true);
+    
+    $intro = ! empty( $instance['intro'] ) ? $instance['intro'] : '';
+    
+    $color_widget_back = ! empty( $instance['color_widget_back'] ) ? $instance['color_widget_back'] : '';
+		$color_cta_back = ! empty( $instance['color_cta_back'] ) ? $instance['color_cta_back'] : '';
+		$color_cta_font = ! empty( $instance['color_cta_font'] ) ? $instance['color_cta_font'] : '';	
+    $color_label_font = ! empty( $instance['color_label_font'] ) ? $instance['color_label_font'] : '';
+    $color_promotion_font = ! empty( $instance['color_promotion_font'] ) ? $instance['color_promotion_font'] : '';
+    $logo_size = ! empty( $instance['logo_size'] ) ? $instance['logo_size'] : 'large';
 
     // if no promotions are found exit with an error message
     if ($promotion === false) {
-      echo __('There are no promotions to display', 'bizyhood');
+      ?>
+      
+      <div class="row bh_business-header">
+          <div class="col-md-12 bh_business-header-title">	
+              <div class="bh_noresults <?php echo ($color_widget_back != '' ? 'style="background-color: '. $color_widget_back .'; border-color: '. $color_widget_back .';"' : ''); ?>">
+                <p class="linkback" <?php echo ($color_label_font != '' ? 'style="color: '. $color_label_font .'"' : ''); ?>>
+                  <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_SIGNUP_PAGE_ID)); ?>" title="Sign up">Business Owners - Add your Promotions here!</a>
+                </p>
+              </div>
+          </div>
+      </div>
+      
+      <?php
       echo $args['after_widget'];
       return;
     }
@@ -100,15 +121,6 @@ class bizy_promotions_widget extends WP_Widget {
       }
     }
     
-    
-    $intro = ! empty( $instance['intro'] ) ? $instance['intro'] : '';
-    
-    $color_widget_back = ! empty( $instance['color_widget_back'] ) ? $instance['color_widget_back'] : '';
-		$color_cta_back = ! empty( $instance['color_cta_back'] ) ? $instance['color_cta_back'] : '';
-		$color_cta_font = ! empty( $instance['color_cta_font'] ) ? $instance['color_cta_font'] : '';	
-    $color_label_font = ! empty( $instance['color_label_font'] ) ? $instance['color_label_font'] : '';
-    $color_promotion_font = ! empty( $instance['color_promotion_font'] ) ? $instance['color_promotion_font'] : '';
-    $logo_size = ! empty( $instance['logo_size'] ) ? $instance['logo_size'] : 'large';
 		
     $widget_backcolor = ($color_widget_back != '' ? 'style="background-color: '. $color_widget_back .'; border-color: '. $color_widget_back .';"' : '');
     
