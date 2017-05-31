@@ -318,6 +318,7 @@ class Bizyhood_Core
         add_shortcode('bh-events', array($this, 'events_shortcode'));
         add_shortcode('bh-guide', array($this, 'guide_shortcode'));
         add_shortcode('bh-search', array($this, 'search_shortcode'));
+        add_shortcode('bh-group', array($this, 'businesses_group'));
         add_filter('the_content', array($this, 'postTemplate'), 100);
         add_action('wp_ajax_bizyhood_save_settings', array('Bizyhood_Ajax', 'Bizyhood_saveSettings'));
         
@@ -1087,7 +1088,16 @@ class Bizyhood_Core
     
     function load_plugin_styles()
     {
-        if (Bizyhood_Utility::is_bizyhood_page()) {
+        // check if shortcode exists
+        global $post, $wpdb;
+        
+        // determine whether this page contains "bh-group" shortcode
+        $shortcode_found = false;
+        if ($post && isset($post->post_content) && has_shortcode($post->post_content, 'bh-group')) {         
+          $shortcode_found = true;
+        }
+      
+        if (Bizyhood_Utility::is_bizyhood_page() || $shortcode_found == true) {
           wp_enqueue_style ('bizyhood-bootstrap-styles', Bizyhood_Utility::getCSSBaseURL() . 'bootstrap.min.css', array(), self::BOOTSTRAP_VERSION);
           wp_enqueue_style ('bizyhood-plugin-styles',  Bizyhood_Utility::getCSSBaseURL() . 'plugin.css', array(), BIZYHOOD_VERSION);
           wp_enqueue_style ('socicon-styles',  Bizyhood_Utility::getCSSBaseURL() . 'socicon.css', array(), BIZYHOOD_VERSION);
@@ -1816,6 +1826,62 @@ class Bizyhood_Core
     }
     
     
+    
+    
+    
+    public function businesses_group($attrs)
+    {
+      $attributes = shortcode_atts( array(
+        'group' => false, // group id 
+      ), $attrs );
+    
+      
+      $authetication = Bizyhood_oAuth::set_oauth_temp_data();
+      if (is_wp_error($authetication)) {
+        return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
+      }
+      
+      if (Bizyhood_oAuth::checkoAuthData() == false || get_transient('bizyhood_oauth_data') === false) {
+        return Bizyhood_View::load( 'listings/error', array( 'error' => 'oAuth Failed'), true );
+      }
+      if ($attrs['group'] === false) {
+        return Bizyhood_View::load( 'listings/error', array( 'error' => 'The Group ID is required'), true );
+      }
+      
+
+     
+      $client = Bizyhood_oAuth::oAuthClient();
+           
+      if (is_wp_error($client)) {
+        $error = new WP_Error( 'bizyhood_error', $client->get_error_message() );
+        return array('error' => $error);
+      }      
+      
+      
+      $api_url = Bizyhood_Utility::getApiUrl();
+      
+      try {
+        $response = $client->fetch($api_url.'/business/group/'.$attrs['group'].'/');
+      } catch (Exception $e) {
+        $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
+        return array('error' => $error);
+      }  
+      
+      // avoid throwing an error
+      if (!is_array($response) || (is_array($response) && isset($response['code']) && $response['code'] != 200)) { return; }
+      
+      
+      // avoid throwing an error
+      if ($response['result'] === null || empty($response['result'])) { return; }
+      
+      $businesses = $response['result']['results'];
+      $total_count = $response['result']['total_count'];
+
+      $view_business_page_id = Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID);
+            
+      return Bizyhood_View::load( 'listings/group', array( 'businesses' => $businesses, 'view_business_page_id' => $view_business_page_id ), true );
+      
+    }
     public function businesses_shortcode($attrs)
     {
       
