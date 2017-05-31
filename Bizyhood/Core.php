@@ -1829,6 +1829,32 @@ class Bizyhood_Core
     
     
     
+    public function businesses_group_request($groupd_id)
+    {
+      
+      $client = Bizyhood_oAuth::oAuthClient();
+           
+      if (is_wp_error($client)) {
+        $error = new WP_Error( 'bizyhood_error', $client->get_error_message() );
+        return array('error' => $error);
+      }      
+      
+      
+      $api_url = Bizyhood_Utility::getApiUrl();
+      
+      try {
+        $response = $client->fetch($api_url.'/business/group/'. $groupd_id .'/');
+      } catch (Exception $e) {
+        $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
+        return array('error' => $error);
+      }  
+      
+      // avoid throwing an error
+      if (!is_array($response) || (is_array($response) && isset($response['code']) && $response['code'] != 200)) { return false; }
+      
+      return $response;
+      
+    }
     public function businesses_group($attrs)
     {
       $attributes = shortcode_atts( array(
@@ -1847,32 +1873,11 @@ class Bizyhood_Core
       if ($attrs['group'] === false) {
         return Bizyhood_View::load( 'listings/error', array( 'error' => 'The Group ID is required'), true );
       }
-      
-
-     
-      $client = Bizyhood_oAuth::oAuthClient();
-           
-      if (is_wp_error($client)) {
-        $error = new WP_Error( 'bizyhood_error', $client->get_error_message() );
-        return array('error' => $error);
-      }      
-      
-      
-      $api_url = Bizyhood_Utility::getApiUrl();
-      
-      try {
-        $response = $client->fetch($api_url.'/business/group/'.$attrs['group'].'/');
-      } catch (Exception $e) {
-        $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
-        return array('error' => $error);
-      }  
+            
+      $response = self::businesses_group_request($attrs['group']);
       
       // avoid throwing an error
-      if (!is_array($response) || (is_array($response) && isset($response['code']) && $response['code'] != 200)) { return; }
-      
-      
-      // avoid throwing an error
-      if ($response['result'] === null || empty($response['result'])) { return; }
+      if ($response === false || $response['result'] === null || empty($response['result'])) { return; }
       
       $businesses = $response['result']['results'];
       $total_count = $response['result']['total_count'];
