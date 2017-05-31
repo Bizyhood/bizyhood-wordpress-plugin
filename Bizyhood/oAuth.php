@@ -1,8 +1,15 @@
 <?php
+
+// Make sure we don't expose any info if called directly
+if ( !function_exists( 'add_action' ) ) {
+	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
+	exit;
+}
+
 /**
  * This file contains a class for oAuth methods
  */
-
+ 
 /**
  * The class contains a number of oAuth methods that may be needed by various
  *  parts of Bizyhood
@@ -60,7 +67,7 @@ class Bizyhood_oAuth
       }
     
       $client->setAccessTokenType($client::ACCESS_TOKEN_BEARER);
-      $client->setAccessToken(get_transient('bizyhood_oauth_data'));
+      $client->setAccessToken(get_transient(Bizyhood_Core::KEY_OAUTH_DATA));
       $curl_timeout = array(
         CURLOPT_CONNECTTIMEOUT => self::OAUTH_CURLOPT_CONNECTTIMEOUT,
         CURLOPT_TIMEOUT => self::OAUTH_CURLOPT_TIMEOUT
@@ -89,13 +96,13 @@ class Bizyhood_oAuth
      * Set the Bizyhood oAuth Data transient
      * @return mixed boolean or WP_error
      */
-    public function set_oauth_temp_data() {
+    public static function set_oauth_temp_data() {
       
       $provider = Bizyhood_oAuth::setoAuthProvider();
       
 
      // if the oAuth data does not exist
-     if (get_transient('bizyhood_oauth_data') === false ) {
+     if (get_transient(Bizyhood_Core::KEY_OAUTH_DATA) === false ) {
         $params = array();
         $client = new OAuth2\Client($provider['clientId'], $provider['clientSecret']);
         try {
@@ -111,10 +118,10 @@ class Bizyhood_oAuth
         if ( is_array($response) && !empty($response) && isset($response['code']) && $response['code'] == 200 && (isset($response['result']['access_token']) && strlen($response['result']['access_token']) > 0)) {
           
           $client->setAccessToken($response['result']['access_token']);
-          set_transient('bizyhood_oauth_data', $response['result']['access_token'], $response['result']['expires_in']);
+          set_transient(Bizyhood_Core::KEY_OAUTH_DATA, $response['result']['access_token'], $response['result']['expires_in']);
                     
         } else {
-          delete_transient('bizyhood_oauth_data');
+          delete_transient(Bizyhood_Core::KEY_OAUTH_DATA);
           if (Bizyhood_Utility::is_bizyhood_page()) {
             return new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Error code: '. $response['code'] .'; '.$response['result']['error'], 'bizyhood' ) );
           } else {

@@ -60,7 +60,7 @@ class Bizyhood_Utility
      * Checks if this is a bizyhood page
      * @return boolean
      */
-    public function is_bizyhood_page() {
+    public static function is_bizyhood_page() {
       
       if (
         is_page(self::getOption(Bizyhood_Core::KEY_SIGNUP_PAGE_ID)) || 

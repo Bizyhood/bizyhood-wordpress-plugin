@@ -18,6 +18,11 @@ require_once dirname(__FILE__) . '/Public/vendor/OAuth2/Client.php';
 require_once dirname(__FILE__) . '/Public/vendor/OAuth2/GrantType/IGrantType.php';
 require_once dirname(__FILE__) . '/Public/vendor/OAuth2/GrantType/ClientCredentials.php';
 require_once dirname(__FILE__) . '/oAuth.php';
+require_once dirname(__FILE__) . '/ApiCalls.php';
+require_once dirname(__FILE__) . '/Shortcodes.php';
+require_once dirname(__FILE__) . '/Seo.php';
+require_once dirname(__FILE__) . '/Meta.php';
+require_once dirname(__FILE__) . '/Bizybox.php';
 
 
 if (! class_exists('Bizyhood_Core')):
@@ -313,14 +318,18 @@ class Bizyhood_Core
         add_action('wp_enqueue_scripts', 	array($this, 'load_plugin_styles'));
         add_action('wp_enqueue_scripts', 	array($this, 'load_plugin_gallery'));
         add_action('wp_enqueue_scripts', 	array($this, 'load_plugin_analytics'));
-        add_shortcode('bh-businesses', array($this, 'businesses_shortcode'));
-        add_shortcode('bh-promotions', array($this, 'promotions_shortcode'));
-        add_shortcode('bh-events', array($this, 'events_shortcode'));
-        add_shortcode('bh-guide', array($this, 'guide_shortcode'));
-        add_shortcode('bh-search', array($this, 'search_shortcode'));
-        add_shortcode('bh-group', array($this, 'businesses_group'));
         add_filter('the_content', array($this, 'postTemplate'), 100);
         add_action('wp_ajax_bizyhood_save_settings', array('Bizyhood_Ajax', 'Bizyhood_saveSettings'));
+        
+        // add shortcodes        
+        $Bizyhood_Shortcodes = new Bizyhood_Shortcodes;
+        
+        add_shortcode('bh-businesses', array($Bizyhood_Shortcodes, 'businesses_shortcode'));
+        add_shortcode('bh-promotions', array($Bizyhood_Shortcodes, 'promotions_shortcode'));
+        add_shortcode('bh-events', array($Bizyhood_Shortcodes, 'events_shortcode'));
+        add_shortcode('bh-guide', array($Bizyhood_Shortcodes, 'guide_shortcode'));
+        add_shortcode('bh-search', array($Bizyhood_Shortcodes, 'search_shortcode'));
+        add_shortcode('bh-group', array($Bizyhood_Shortcodes, 'businesses_group'));
         
         
         // create rewrite rule for single business
@@ -330,29 +339,34 @@ class Bizyhood_Core
         // check if a flush is needed
         add_action( 'wp_loaded', array($this, 'bizyhood_flush_rules') );
         
+        // add SEO plugins support
+        $Bizyhood_Seo = new Bizyhood_Seo;
+        
         // Yoast SEO additions START
         
-        add_action( 'init', array( $this, 'sitemap_init' ), 10 );
-        add_action('wpseo_do_sitemap_bizyhood-sitemap', array($this, 'bizyhood_create_sitemap') );
-        add_filter( 'wpseo_sitemap_index', array($this, 'bizyhood_addtoindex_sitemap') );
+        add_action( 'init', array( $Bizyhood_Seo, 'sitemap_init' ), 10 );
+        add_action('wpseo_do_sitemap_bizyhood-sitemap', array($Bizyhood_Seo, 'bizyhood_create_sitemap') );
+        add_filter( 'wpseo_sitemap_index', array($Bizyhood_Seo, 'bizyhood_addtoindex_sitemap') );
         
         // Yoast SEO additions END      
 
         // AIOSP START
         
-        add_filter( 'aiosp_sitemap_extra', array( $this, 'aiosp_sitemap_init' ), 10 );
-        add_filter( 'aiosp_sitemap_custom_bizyhood', array( $this, 'bizy_add_aioseo_pages' ), 10, 3 );
-        add_filter( 'aiosp_sitemap_addl_pages', array( $this, 'bizy_add_aioseo_pages' ), 10, 1 );
+        add_filter( 'aiosp_sitemap_extra', array( $Bizyhood_Seo, 'aiosp_sitemap_init' ), 10 );
+        add_filter( 'aiosp_sitemap_custom_bizyhood', array( $Bizyhood_Seo, 'bizy_add_aioseo_pages' ), 10, 3 );
+        add_filter( 'aiosp_sitemap_addl_pages', array( $Bizyhood_Seo, 'bizy_add_aioseo_pages' ), 10, 1 );
         
         // AIOSP END
         
         
         // editor bizybutton START
         
-        add_action('admin_head', array( $this, 'bizy_add_bizylink_button'));
+        $Bizyhood_Bizybox = new Bizyhood_Bizybox();
         
-        add_action( 'wp_ajax_bizylink_insert_dialog', array( $this, 'bizylink_insert_dialog' ));
-        add_action( 'wp_ajax_bizylink_business_results', array( $this, 'bizylink_business_results' ));
+        add_action('admin_head', array( $Bizyhood_Bizybox, 'bizy_add_bizylink_button'));
+        
+        add_action( 'wp_ajax_bizylink_insert_dialog', array( $Bizyhood_Bizybox, 'bizylink_insert_dialog' ));
+        add_action( 'wp_ajax_bizylink_business_results', array( $Bizyhood_Bizybox, 'bizylink_business_results' ));
 
         // editor bizybutton END
 
@@ -396,8 +410,10 @@ class Bizyhood_Core
         
         // meta START
 
-        add_action('wp_loaded', array( $this, 'buffer_start'), 100000);    
-        add_action('shutdown', array( $this, 'buffer_end'), 100000);       
+        $Bizyhood_Meta = new Bizyhood_Meta();
+
+        add_action('wp_loaded', array( $Bizyhood_Meta, 'buffer_start'), 100000);    
+        add_action('shutdown', array( $Bizyhood_Meta, 'buffer_end'), 100000);       
         
         // meta END
         
@@ -437,160 +453,6 @@ class Bizyhood_Core
       register_widget( 'bizy_events_widget' );
     }
 
-    function buffer_start() { 
-      ob_start(array(&$this, "buffer_callback")); 
-    }
-    function buffer_end() { 
-      if (ob_get_contents()) {
-        ob_end_flush(); 
-      }
-    }
-    
-    function buffer_callback($buffer) {
-      
-      global $wp_query;
-      
-      $overview_page = Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID);
-      $events_page = Bizyhood_Utility::getOption(self::KEY_EVENTS_PAGE_ID);
-      $promotions_page = Bizyhood_Utility::getOption(self::KEY_PROMOTIONS_PAGE_ID);
-      
-      if (!is_page($overview_page) && !is_page($events_page) && !is_page($promotions_page) ) {
-        return $buffer;
-      }
-      
-      $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
-      $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
-              
-      if ($bizyhood_name == self::RSS_SUFFIX || $bizyhood_id == self::RSS_SUFFIX) {
-        return $buffer;
-      }
-      
-      $metadata = array();
-      
-      // overview page metadata
-      if (is_page($overview_page)) {
-        
-      
-        $single_business_information = self::single_business_information();
-        
-        $business = '';
-        
-        if($single_business_information === false || !isset($single_business_information->name)) {
-          return $buffer;
-        } else {
-         $business = $single_business_information; 
-        }
-        
-        $metadata['title'] = htmlentities($business->name .', '. $business->locality .', '. $business->region .' '. $business->postal_code .' - '.get_bloginfo('name'));
-        $metadata['canonical'] = get_permalink($overview_page)  . $business->slug .'/'.$business->bizyhood_id .'/';
-
-        if ($business->claimed == 1 && $business->description != '') {
-          $metadata['description'] = wp_trim_words(htmlentities($business->description), self::META_DESCRIPTION_LENGTH, '');
-        } else {
-          $metadata['description'] = htmlentities($business->name.' is a hyper-local, small business, located in and/or serving the '. $business->locality .', '. $business->region .' area.');
-        }
-        
-        
-        if($business->business_logo) {
-          $metadata['logo'] = $business->business_logo->image->url;
-        }
-      }
-      
-      // overview page metadata
-      if (is_page($events_page) && isset($wp_query->query_vars['bizyhood_id']) && $wp_query->query_vars['bizyhood_id'] != '') {
-
-        $bizyhood_name = '';
-        
-        $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
-        $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
-        
-        $single_event_information = self::single_business_additional_info('events', $bizyhood_name, $bizyhood_id);
-        
-        $business = '';
-        
-        if($single_event_information === false || !isset($single_event_information->name)) {
-          return $buffer;
-        }
-        
-        $metadata['title'] = htmlentities($single_event_information->name .', '. $single_event_information->business_name .' - '.get_bloginfo('name'));
-        $metadata['canonical'] = get_permalink($events_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
-        $metadata['description'] = wp_trim_words(htmlentities($single_event_information->description), self::META_DESCRIPTION_LENGTH, '');
-
-      }
-      
-      // promotions page metadata
-      if (is_page($promotions_page) && isset($wp_query->query_vars['bizyhood_id']) && $wp_query->query_vars['bizyhood_id'] != '') {
-        
-        
-        $bizyhood_name = '';
-        
-        $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
-        $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
-
-        
-        $single_promotion_information = self::single_business_additional_info('promotions', $bizyhood_name, $bizyhood_id);
-        
-        $business = '';
-        
-        if($single_promotion_information === false || !isset($single_promotion_information->name)) {
-          return $buffer;
-        }
-        
-        $metadata['title'] = htmlentities($single_promotion_information->name .', '. $single_promotion_information->business_name .' - '.get_bloginfo('name'));
-        $metadata['canonical'] = get_permalink($promotions_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
-        $metadata['description'] = wp_trim_words(htmlentities($single_promotion_information->details), self::META_DESCRIPTION_LENGTH, '');
-
-      }
-      
-      
-      if (empty($metadata)) {
-        return $buffer;
-      }
-
-      
-      // remove meta
-      $buffer = preg_replace( '/<meta property="og.*?\/>\n/i', '', $buffer );
-      $buffer = preg_replace( '/<meta name="twitter.*?\/>\n/i', '', $buffer );
-      $buffer = preg_replace( '/<link rel="canonical.*?\/>\n/i', '', $buffer );
-      
-      
-      
-      $meta = '
-        <link rel="canonical" href="'. $metadata['canonical'] .'" />
-        <meta property="og:locale" content="'. get_locale() .'" />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content="'. $metadata['title'] .'" />
-        <meta property="og:url" content="'. $metadata['canonical'] .'" />
-        <meta property="og:site_name" content="'. get_bloginfo('name') .'" />
-        
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="'. $metadata['title'] .'" />
-      ';
-
-      $meta .= '
-        <meta property="og:description" content="'. $metadata['description']  .'" />
-        <meta name="twitter:description" content="'. $metadata['description'] .'" />
-        <meta name="description" content="'. $metadata['description'] .'" />
-        ';
-
-      
-      if(isset($metadata['logo'])) {
-        
-        $meta .= '
-          <meta property="og:image" content="'. $metadata['logo'] .'" />
-        ';
-      }
-      
-      
-      $buffer = preg_replace( '/<title.*?\/title>/si', '<title>'. $metadata['title'] .'</title>'."\n".$meta, $buffer );
-
-  
-    
-      return $buffer;
-    }
-    
-
-    
     
     
     function remove_empty_paragraphs() {
@@ -638,7 +500,7 @@ class Bizyhood_Core
       
       if (Bizyhood_Utility::getApiID() != '' && Bizyhood_Utility::getApiSecret() != '') {
         $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-        if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
+        if (is_wp_error($authetication) || $authetication === false) {
           $errors[] = __('Can not authenticate to the Bizyhood API. Check your Client ID and Secret Key. %s', 'bizyhood');
         }
       }
@@ -655,178 +517,8 @@ class Bizyhood_Core
     }
     
     
-    function bizylink_business_results() {
-
-      $_GET['keywords']  = $_REQUEST['keywords'];
-    
-      
-      $queryapi = $this->businesses_information(array('paged' => 1, 'verified' => false, 'ps' => self::BIZYBOX_MAX_LIMIT));
-      $numofpages = floor($queryapi['total_count'] / $queryapi['page_size']);
-      $urlbase = get_permalink( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) );
-      $date = date("Y-m-d H:i");
-      $count  = $queryapi['total_count']; // get the number of results // 492
-      
-      $out = '
-        <div class="query-notice" id="query-notice-message">
-          <em class="query-notice-default">Results for: <b>'. $_GET['keywords'].'</b> ('. count($queryapi['businesses']) .')</em>
-        </div>';
-      
-      
-      
-      
-      if (count($queryapi['businesses']) > 0) {
-        $out .= '<ul class="bizyres">';
-        $i = 0;
-        foreach ($queryapi['businesses'] as $business) {
-          
-          $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-          
-          $out .= '<li class="'. ($i%2 == false ? 'alternate' : '') .'"><a href="'. $urlbase.$urlarr[0].'/'.$urlarr[1].'/' .'" title="'. $business->name .'">'. $business->name .' - '. $business->address1 .', '. $business->locality .', '. $business->region.', '. $business->postal_code .'</li>';
-          $i++;
-        }
-        $out .= '</ul>';
-      } else {
-        $out = '<span class="faded">No results found for <em>'.$_GET['keywords'] .'</em></span>';
-      }
-      
-      
-      
-      
-      die( $out );
-    }
-    
-    function bizylink_insert_dialog() {
-      
-      $out ='
-        <table class="wp-list-table widefat fixed striped table options_table">
-          <tr>
-            <td class="first_column">
-              <label id="bizylink_type-l" class="mce-widget mce-label mce-first" for="bizylink_type" aria-disabled="false">Link Type</label>
-            </td>
-            <td>
-              <input type="radio" id="bizylink_type_box" name="bizylink_type" value="bizybox" class="bizyradio" /> 
-              Call to Action Link<br>
-
-              <input type="radio" id="bizylink_type_normal" name="bizylink_type" value="bizylink" class="bizyradio" checked /> 
-              Regular Hyperlink
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label id="bizylink_title-l" class="mce-widget mce-label mce-first" for="bizylink_title" aria-disabled="false">Link Text</label>
-            </td>
-            <td>
-              <input type="text" placeholder="your bizybox text" id="bizylink_title" class="mce-textbox mce-last" value="" hidefocus="1" aria-labelledby="bizylink_title-l">
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label id="bizylink_search-l" class="mce-widget mce-label mce-first" for="bizylink_search" aria-disabled="false">Search Business</label>
-            </td>
-            <td>
-              <input type="text" placeholder="type keyword" id="bizylink_search" class="mce-textbox mce-last form-initialized" value="" hidefocus="1" aria-labelledby="bizylink_search-l">
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <div id="bizylink_results"><span class="faded">Type a keyword on the field above to search the Bizyhood directory.</span></div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label id="bizylink_link-l" class="mce-widget mce-label mce-first" for="bizylink_link" aria-disabled="false">Business Link</label>
-            </td>
-            <td>
-              <input type="text" placeholder="business overview link" id="bizylink_link" class="mce-textbox mce-last form-initialized" value="" hidefocus="1" aria-labelledby="bizylink_link-l">
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label id="bizylink_target-l" class="mce-widget mce-label mce-first" for="bizylink_target" aria-disabled="false">Open in new window</label>
-            </td>
-            <td>
-              <input type="checkbox" placeholder="business overview link" id="bizylink_target" class="mce-last form-initialized" value="yes" hidefocus="1" aria-labelledby="bizylink_target-l">
-            </td>
-          </tr>
-        </table>
-      ';
     
     
-      die( $out );
-
-    }
-    
-    
-    function bizy_add_bizylink_button() {
-      if ( get_user_option('rich_editing') == 'true' && current_user_can('edit_posts')) {
-        add_filter('mce_buttons', array( $this, 'bizy_register_buttons' ), 10);
-        add_filter('mce_external_plugins', array( $this, 'bizy_register_tinymce_javascript' ), 10);
-      }
-      
-      return;
-      
-    }
-    
-    
-    function bizy_register_buttons($buttons) {
-      array_push($buttons, 'separator', 'bizylink');
-      return $buttons;
-    }
-    
-    function bizy_register_tinymce_javascript($plugin_array) {
-      $plugin_array['bizylink'] = plugins_url('/Public/js/bizybutton-plugin.js',__FILE__);
-      return $plugin_array;
-    }
-
-    
-    
-    function bizy_add_aioseo_pages( $pages ) {
-      
-      // initialize array
-      if ( empty( $pages ) ) $pages = Array();
-      
-      $queryapi = $this->businesses_information(array('paged' => 1, 'verified' => TRUE, 'ps' => self::API_MAX_LIMIT));
-      $numofpages = floor($queryapi['total_count'] / $queryapi['page_size']);
-      $urlbase = get_permalink( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) );
-      $date = date("Y-m-d H:i");
-      $count  = $queryapi['total_count']; // get the number of results // 492
-      
-      $start = 1;
-      
-      // get first 12 urls to save an API request
-      if ($start == 1) {
-        foreach($queryapi['businesses'] as $business) {
-          $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-          $pages[] = Array( "loc" => $urlbase.$urlarr[0].'/'.$urlarr[1].'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );
-        }
-      }
-      
-      // get the rest of the urls if they exist
-      $i = $start + 1; // start  to query the API from the second batch
-      while($i <= $numofpages) {
-        $queryapi = $this->businesses_information(array('paged' => $i, 'verified' => TRUE, 'ps' => self::API_MAX_LIMIT));
-        foreach($queryapi['businesses'] as $business) {
-          $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-          $pages[] = Array( "loc" => $urlbase.$urlarr[0].'/'.$urlarr[1].'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );
-        }
-        $i++;
-      }
-      
-      
-
-      
-      return $pages;
-    }
-    
-    
-    function aiosp_sitemap_init($extra) {
-            
-      $extra[] = 'bizyhood';
-      
-      return $extra;
-    }
-    
-        
     
     function bizyhood_add_query_vars($aVars) 
     {
@@ -874,217 +566,7 @@ class Bizyhood_Core
       }
     }
     
-    
-    // create Yoast sitemap
-    
-    public function sitemap_init() {
-      if ( isset( $GLOBALS['wpseo_sitemaps'] ) ) {
-        $GLOBALS['wpseo_sitemaps']->register_sitemap( 'bizyhood', array( $this, 'sitemap_build' ) );
-      }
-    }
-    
-    
-    public function sitemap_build() {
-      global $wpseo_sitemaps;
-      
-      if (!$this->bizyhood_create_sitemap()) {
-        return false;
-      }
-      
-      $wpseo_sitemaps->set_sitemap( $this->bizyhood_create_sitemap() );
-      $wpseo_sitemaps->set_stylesheet( '<?xml-stylesheet type="text/xsl" href="' . preg_replace( '/(^http[s]?:)/', '', esc_url( home_url( 'main-sitemap.xsl' ) ) ) . ' "?>' );
-    }
-    
-    
-    public function bizyhood_create_all_urls($verified = false) {
-      
-      $yoastoptions = WPSEO_Options::get_all();
-      $max_entries  = $yoastoptions['entries-per-page']; // get the limit of urls per sitemap page
-      $sitemapnum   = (get_query_var( 'sitemap_n' ) ? get_query_var( 'sitemap_n' ) : 1); // get the sitemap number / page
-      $urlbase      = get_permalink( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) );
-      $date         = date("Y-m-d H:i");
-
-      $urls         = array(); // initialize URLs array
-      $apimax       = self::API_MAX_LIMIT; // set the max we can get from the API in one fetch
-      $urlindex     = 0; // help index the urls array
-           
-      // if yoast is set to grab per sitemap more than $apimax (self::API_MAX_LIMIT) results
-      if ($max_entries > $apimax) {
-        $ps = $apimax;
-        $query_params = array('paged' => 1, 'verified' => $verified, 'ps' => $ps);
-        $queryapi = $this->businesses_information($query_params);
         
-        
-        // max number of pages
-        $maxsitemapnum = (int) ceil( $count / $max_entries );
-        // get bizyhod page to start
-        $start  = (($sitemapnum - 1) * $max_entries / $apimax == 0 ? 1 : ceil(($sitemapnum - 1) * $max_entries / $apimax));
-        // get bizyhod page to end
-        $end  = ceil($sitemapnum * $max_entries / $apimax);
-                
-        // we only have LESS than $apimax (self::API_MAX_LIMIT) then get only the first query results
-        if ($queryapi['total_count'] <= $apimax && $sitemapnum == 1) {
-          
-          if (!empty($queryapi['businesses'])) {
-            foreach($queryapi['businesses'] as $business) {
-              $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-              $urls[$urlindex]['url'] = $urlbase.$urlarr[0].'/'.$urlarr[1].'/';
-              $urls[$urlindex]['date'] = $date;
-              $urlindex++;
-            }
-          
-            return $urls;
-          } else {
-            
-            // nothing to return, no urls found
-            return;
-          }
-          
-        }
-        
-        // we have MORE than $apimax (self::API_MAX_LIMIT) results than we can get at once from the API
-        if ($queryapi['total_count'] > $apimax) {
-          
-          $bizyresults = 0; // results that we have already fetch
-          $bizypaged = $start;
-          while ($bizyresults < $max_entries && $queryapi['total_count'] > $bizyresults && $bizypaged <= $end) {
-                        
-            $query_params = array('paged' => $bizypaged, 'verified' => $verified, 'ps' => $ps);
-            $queryapi = $this->businesses_information($query_params);
-
-            
-            if (!empty($queryapi['businesses'])) {
-              
-              // remove the first n from the array if we have it already on the previous xml page
-              // only on the first loop and not on the first page
-              $remove_from_start = ($max_entries % $apimax) * ($sitemapnum - 1);
-              
-              
-              if ($remove_from_start >= 0 && $bizyresults == 0 && $sitemapnum > 1) {
-                
-                $queryapi['businesses'] = array_slice($queryapi['businesses'], $remove_from_start);
-                
-              }
-              
-              foreach($queryapi['businesses'] as $business) {
-                
-                if ($urlindex == $max_entries) { break 2; }
-                
-                $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-                $urls[$urlindex]['url'] = $urlbase.$urlarr[0].'/'.$urlarr[1].'/';
-                $urls[$urlindex]['date'] = $date;
-                $urlindex++;
-              }
-            } else {
-              // there are no more results, so break the while
-              break;
-            }
-            
-            $bizyresults = $bizyresults + $apimax; // count the number of results we have added
-            $bizypaged++; // increase the page number by one
-            
-          }
-          
-          return $urls;
-          
-        }
-        
-      // if yoast is set to grab per sitemap less than $apimax (self::API_MAX_LIMIT) results, then we just follow the yoast pagination
-      } else {
-        
-        $ps = $max_entries;
-        $query_params = array('paged' => $sitemapnum, 'verified' => $verified, 'ps' => $ps);
-        $queryapi = $this->businesses_information($query_params);        
-        
-        if (!empty($queryapi['businesses'])) {
-          foreach($queryapi['businesses'] as $business) {
-            $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-            $urls[$urlindex]['url'] = $urlbase.$urlarr[0].'/'.$urlarr[1].'/';
-            $urls[$urlindex]['date'] = $date; // this needs to be changed to the last modified when added to the API // TODO
-            $urlindex++;
-          }
-        } else {
-            
-          // nothing to return, no urls found
-          return;
-        }
-        
-        return $urls;
-        
-      }
-            
-            
-      return;
-    }
-    
-    
-    public function bizyhood_create_sitemap() {
-      
-      // get only verified businesses
-      $urls = $this->bizyhood_create_all_urls(true);
-      
-      if (empty($urls)) {
-        return false;
-      }
-      
-      $WPSEO_Sitemaps = new WPSEO_Sitemaps();
-      
-      
-      $sitemap  = '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" ';
-      $sitemap .= 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" ';
-      $sitemap .= 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-      
-      foreach($urls as $u) {      
-        $sitemap .= $WPSEO_Sitemaps->sitemap_url(
-            array(
-              'loc' => $u['url'],
-              'pri' => 0.6,
-              'chf' => 'monthly',
-              'mod' => $u['date']
-            )
-        );
-      }
-        
-			$sitemap .= '</urlset>';
-      
-      return $sitemap;
-      
-    }
-    
-    
-    // add sitemap to index
-    function bizyhood_addtoindex_sitemap() {
-      
-      $getfirstpage = $this->businesses_information(array('paged' => 1, 'verified' => TRUE, 'ps' => self::API_MAX_LIMIT));
-      $count  = $getfirstpage['total_count'];
-      $yoastoptions = WPSEO_Options::get_all();
-      $max_entries  = $yoastoptions['entries-per-page'];
-      $sitemap = '';
-      
-      // if we need to split the sitemaps
-      if ($count > $max_entries) {
-        
-        $n = (int) ceil( $count / $max_entries );
-        for ( $i = 1; $i <= $n; $i ++ ) {
-          
-          $sitemap  .= '<sitemap>' . "\n";
-          $sitemap .= '<loc>' . wpseo_xml_sitemaps_base_url( 'bizyhood-sitemap' . $i . '.xml' ) . '</loc>' . "\n";
-          $sitemap .= '<lastmod>' . htmlspecialchars( date("c") ) . '</lastmod>' . "\n";
-          $sitemap .= '</sitemap>' . "\n";
-          
-        }
-        
-      } else { // create just one
-      
-        $sitemap  = '<sitemap>' . "\n";
-        $sitemap .= '<loc>' . wpseo_xml_sitemaps_base_url( 'bizyhood-sitemap.xml' ) . '</loc>' . "\n";
-        $sitemap .= '<lastmod>' . htmlspecialchars( date("c") ) . '</lastmod>' . "\n";
-        $sitemap .= '</sitemap>' . "\n";
-        
-      }
-      return $sitemap;
-    }
-    
     
     function load_plugin_styles()
     {
@@ -1286,655 +768,6 @@ class Bizyhood_Core
     }
     
     
-    /***************************/
-    /***** API Calls START *****/
-    
-    public function single_business_information($bizyhood_id = '')
-    {
-      
-      global $wp_query;
-      
-      $api_url = Bizyhood_Utility::getApiUrl();
-      $params = array();
-      
-      if ($bizyhood_id == '') {
-        if(isset($wp_query->query_vars['bizyhood_id'])) {
-          $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
-        } else {
-          $bizyhood_id = (isset($_REQUEST['bizyhood_id']) ? $_REQUEST['bizyhood_id'] : '');
-        }
-      }
-      
-      if (!$bizyhood_id) {
-        return NULL;
-      }
-
-      $client = Bizyhood_oAuth::oAuthClient();
-      
-      if (is_wp_error($client)) {
-        return false;
-      }
-
-      try {
-        $response = $client->fetch($api_url . "/business/" . $bizyhood_id.'/', $params);
-      } catch (Exception $e) {
-        return false;
-      }  
-      $business = json_decode(json_encode($response['result']), FALSE);
-    
-      return $business;
-    }
-    
-    
-    public function businesses_information($atts)
-    {
-      
-      // no reason to continue if we do not have oAuth token
-      if (get_transient('bizyhood_oauth_data') === false) {
-        return;
-      }
-      
-      $filtered_attributes = shortcode_atts( array(
-        'paged'     => null,
-        'verified'  => null,
-        'paid'      => null,
-        'ps'        => null
-      ), $atts );
-
-      
-      $remote_settings = Bizyhood_Utility::getRemoteSettings();
-      $api_url = Bizyhood_Utility::getApiUrl();
-      $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID);
-      $params = array();
-
-      $show_category_facets = FALSE;
-      
-      // get current page
-      if (isset($filtered_attributes['paged']))
-          $page = $filtered_attributes['paged'];
-      elseif (get_query_var('paged'))
-          $page = get_query_var('paged');
-      elseif (isset($_GET['paged']))
-          $page = $_GET['paged'];
-      else
-          $page = 1;
-
-      // get current ps
-      if (isset($filtered_attributes['ps'])) {
-        $ps = $filtered_attributes['ps'];
-      } elseif (get_query_var('ps')) {
-        $ps = get_query_var('ps');
-      } elseif (isset($_GET['ps'])) {
-        $ps = $_GET['ps'];
-      } else {
-        $ps = 12;
-      }
-
-      if (isset($_GET['c'])) {
-          $categories_query = $_GET['c'];
-          $show_category_facets = TRUE;
-      }
-      
-      // get category filter
-      $category = false;
-      if (get_query_var('cf')) {
-        $category = urldecode( stripslashes(get_query_var('cf')) );
-        $show_category_facets = TRUE;
-      } elseif (isset($_GET['cf'])) {
-        $category = urldecode( stripslashes($_GET['cf']) );
-        $show_category_facets = TRUE;
-      }
-      
-      $keywords = false;
-      if(!empty($_GET['keywords'])) {
-        $keywords = stripslashes(strip_tags($_GET['keywords']));
-        $show_category_facets = TRUE;
-      }
-      
-      // get verified
-
-      $verified = $filtered_attributes['verified'];
-      if (get_query_var('verified')) {
-          $verified = get_query_var('verified');
-      } elseif (isset($_GET['verified'])) {
-          $verified = $_GET['verified'];
-      }
-      
-      // check if $verified has a valid value
-      if ($verified === true || $verified === TRUE || $verified == 1 || $verified == 'y' || $verified == 'Y') {
-        $verified = TRUE;
-      } else {
-        $verified = false;
-      }
-      
-      
-      // get paid
-      $paid = $filtered_attributes['paid'];
-      if (get_query_var('paid')) {
-          $paid = get_query_var('paid');
-      } elseif (isset($_GET['paid'])) {
-          $paid = $_GET['paid'];
-      }
-      
-      // check if $paid has a valid value
-      if ($paid === true || $paid === TRUE || $paid == 1 || $paid == 'y' || $paid == 'Y') {
-        $paid = TRUE;
-      } else {
-        $paid = false;
-      }
-      
-
-      $client = Bizyhood_oAuth::oAuthClient();
-           
-      if (is_wp_error($client)) {
-        $error = new WP_Error( 'bizyhood_error', $client->get_error_message() );
-        return array('error' => $error);
-      }      
-      
-      $params = array(
-        'format' =>'json',
-        'ps'  => $ps,
-        'pn'  => $page
-      );
-      
-      if ($keywords !== false) {
-        $params['k'] = $keywords;
-      }
-      
-      if ($category != false) {
-        $params['cf'] = $category;
-      }
-      
-      if ($verified === TRUE) {
-        $params['verified'] = $verified;
-      }
-      
-      if ($paid === TRUE) {
-        $params['paid'] = $paid;
-      }
-      
-      if (!empty($categories_query)) {
-         $params['cat'] = $categories_query; 
-      }
-      
-      try {
-        $response = $client->fetch($api_url.'/business/', $params);
-      } catch (Exception $e) {
-        $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
-        return array('error' => $error);
-      }  
-      
-      // avoid throwing an error
-      if (!is_array($response) || (is_array($response) && isset($response['code']) && $response['code'] != 200)) { return; }
-      
-      $response_json = $response['result'];
-      
-      // avoid throwing an error
-      if ($response_json === null || empty($response_json)) { return; }
-      
-      $businesses = json_decode(json_encode($response_json['businesses']), FALSE);
-      $total_count = $response_json['total_count'];
-      $page_size = $response_json['page_size'];
-      $facets = $response_json['search_facets'];
-      $categories = $response_json['search_facets']['categories_facet'];
-            
-      $return = array(
-        'remote_settings'   => $remote_settings,
-        'api_url'           => $api_url,
-        'list_page_id'      => $list_page_id,
-        'keywords'          => (isset($keywords) && $keywords != '' ? urldecode($keywords) : ''),
-        'categories'        => (isset($categories) ? $categories : ''),
-        'category'          => (isset($category) ? $category : ''),
-        'page'              => $page,
-        'businesses'        => $businesses,
-        'total_count'       => $total_count,
-        'page_size'         => $page_size,
-        'response'          => json_encode($response['result']),
-        'response_json'     => $response_json,
-        'facets'            => $facets,
-        'show_category_facets' => $show_category_facets     
-      );
-      
-      return $return;
-    }
-    
-     public function single_business_additional_info($info_request = '', $business_identifier = '', $bizyhood_id = '')
-    {
-      
-      global $wp_query;
-      
-      if ($info_request == '') {
-        return false;
-      }
-      
-      $api_url = Bizyhood_Utility::getApiUrl();
-      $params = array();
-      
-      if ($business_identifier == '') {
-        if(isset($wp_query->query_vars['bizyhood_name'])) {
-          $business_identifier = urldecode($wp_query->query_vars['bizyhood_name']);
-        } else {
-          $business_identifier = (isset($_REQUEST['bizyhood_name']) ? $_REQUEST['bizyhood_name'] : '');
-        }
-      }
-      
-      // false if there is no business name
-      if ($business_identifier == '') {
-        return false;
-      } else {
-        $params['bid'] = $business_identifier;
-      }
-
-      $client = Bizyhood_oAuth::oAuthClient();
-      
-      if (is_wp_error($client)) {
-        return false;
-      }
-      
-
-      try {
-        $response = $client->fetch($api_url . '/'. $info_request .($bizyhood_id != '' ? '/' . $bizyhood_id : '').'/', $params);
-      } catch (Exception $e) {
-        return false;
-      }  
-      $info = json_decode(json_encode($response['result']), FALSE);
-    
-      return $info;
-    }
-    
-    
-    
-    /***** additional business info *****/    
-    
-    /**
-     * API call for additional business info
-     * @param array $atts Attributes to be passesd on the API
-     * @param string $command data to get promotions (default) and events
-     * @return mixed results (array) or error (array) or empty
-     */
-    public function business_details_information($atts, $command = 'promotions')
-    {
-      
-      
-      $filtered_attributes = shortcode_atts( array(
-        'bid'         => null,
-        'identifier'  => null
-      ), $atts );
-      
-      $remote_settings = Bizyhood_Utility::getRemoteSettings();
-      $api_url = Bizyhood_Utility::getApiUrl();
-      $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID);      
-      $client = Bizyhood_oAuth::oAuthClient();
-      
-      if (is_wp_error($client)) {
-        return false;
-      }
-      
-      $params = array(
-        'format'      => 'json',
-        'bid'         => $filtered_attributes['bid'],
-        'identifier'  => $filtered_attributes['identifier']
-      );
-
-      try {
-        $response = $client->fetch($api_url.'/'. $command .'/', $params);
-      } catch (Exception $e) {
-        $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
-        return array('error' => $error);
-      }
-      
-      // avoid throwing an error
-      if (!is_array($response) || empty($response['result'])) { return; }
-      
-      $response_json = $response['result'];
-            
-      $return = array(
-        'remote_settings'   => $remote_settings,
-        'api_url'           => $api_url,
-        'list_page_id'      => $list_page_id,
-        'bid'               => (isset($filtered_attributes['bid']) ? $filtered_attributes['bid'] : ''),
-        'identifier'        => (isset($filtered_attributes['identifier']) ? $filtered_attributes['identifier'] : ''),
-        'response'          => json_encode($response_json),
-        'response_json'     => $response_json
-      );
-      
-      return $return;
-      
-    }
-    
-    /***** API Calls END *****/
-    /***************************/
-    
-    
-    public function promotions_shortcode($attrs) {
-      
-      global $wp_query;
-      
-      // init variable
-      $business_name = '';
-      
-      $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-      if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
-        return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
-      }
-      
-      // cache the results
-      $cached_promotions = self::get_cache_value('bizyhood_promotions_widget', 'response_json', 'business_details_information', $attrs, 'promotions');
-            
-      if ($cached_promotions === false) {
-        $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
-        $errormessage = 'Are you a business owner? Would you like to see your promotion(s) on this page? Click <a href="'. get_permalink($signup_page_id) .'" title="sign up or login to Bizyhood">here</a> to sign up or login!';
-        
-        return Bizyhood_View::load( 'listings/noresults', array( 'error' => $errormessage), true );
-      }
-      
-      $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID);
-
-      if (isset($wp_query->query_vars['bizyhood_name']) && isset($wp_query->query_vars['bizyhood_id'])) {
-        
-        $promotions = self::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
-        
-        if ($promotions !== false && !empty($promotions) && !empty($promotions->identifier)) {
-          
-          $cached_promotions = json_decode(json_encode($promotions), true); // convert to array and replace results
-          $business_name = $cached_promotions['business_name'];
-          
-          $promotions_args = array( 
-            'promotion' => $cached_promotions, 
-            'list_page_id' => $list_page_id, 
-            'business_name' => $business_name
-          );
-          
-          // no need to continue // we can return a template page with the result
-          return Bizyhood_View::load( 'listings/single/promotion', $promotions_args, true );
-          
-        }
-      }
-      
-      if (isset($wp_query->query_vars['bizyhood_name']) && !isset($wp_query->query_vars['bizyhood_id'])) {
-        $promotions = self::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name']);
-        
-        if ($promotions !== false && !empty($promotions)) {
-          $cached_promotions = json_decode(json_encode($promotions), true); // convert to array and replace results
-          $business_name = $cached_promotions[0]['business_name'];
-        }
-      }
-      
-      $promotions_args = array( 
-        'promotions' => $cached_promotions, 
-        'list_page_id' => $list_page_id, 
-        'business_name' => $business_name
-      );
-
-      return Bizyhood_View::load( 'listings/promotions', $promotions_args, true );
-      
-    }
-    
-    public function guide_shortcode($attrs) {
-      
-      global $wp_query;
-      
-      $filtered_attributes = shortcode_atts( array(
-        'paged'     => 1,
-        'verified'  => true,
-        'paid'      => true,
-        'ps'        => self::API_MAX_LIMIT
-      ), $attrs );
-      
-      // init variable
-      $business_name = '';
-      
-      $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-      if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
-        return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
-      }
-      
-      $q = $this->businesses_information($filtered_attributes);
-        
-      if (isset($q['error'])) {
-        $error = $q['error'];
-        return Bizyhood_View::load( 'listings/error', array( 'error' => $error->get_error_message()), true );
-      }
-      
-      $page = $q['page'];
-     
-      $businesses     = $q['businesses'];
-      $total_count    = $q['total_count'];
-      $page_size      = $q['page_size'];
-      $page_count     = 0;
-      
-      if ($page_size > 0) {
-          $page_count = ( $total_count / $page_size ) + ( ( $total_count % $page_size == 0 ) ? 0 : 1 );
-      }
-      $pagination_args = array(
-          'total'              => $page_count,
-          'current'            => $page,
-          'type'               => 'list',
-      );
-      $view_business_page_id = Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID);
-      
-      return Bizyhood_View::load( 'listings/guide', array( 'pagination_args' => $pagination_args, 'businesses' => $businesses, 'view_business_page_id' => $view_business_page_id ), true );
-      
-    }
-    public function events_shortcode($attrs) {
-      
-      global $wp_query;
-      
-      // init variable
-      $business_name = '';
-      
-      $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-      if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
-        return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
-      }
-      
-      // cache the results
-      $cached_events = self::get_cache_value('bizyhood_events_widget', 'response_json', 'business_details_information', $attrs, 'events');
-            
-      if ($cached_events === false) {
-        $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
-        $errormessage = 'Are you a business owner? Would you like to see your event(s) on this page? Click <a href="'. get_permalink($signup_page_id) .'" title="sign up or login to Bizyhood">here</a> to sign up or login!';
-        
-        return Bizyhood_View::load( 'listings/noresults', array( 'error' => $errormessage), true );
-      }
-      
-      $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID);
-      
-      if (isset($wp_query->query_vars['bizyhood_name']) && isset($wp_query->query_vars['bizyhood_id'])) {
-        $events = self::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
-        
-        if ($events !== false && !empty($events) && !empty($events->identifier)) {
-          $cached_events = array();
-          $cached_events = json_decode(json_encode($events), true); // convert to array and replace results
-          $business_name = $cached_events['business_name'];
-          $event_identifier = $cached_events['identifier'];
-          
-          $events_args = array( 
-            'event' => $cached_events, 
-            'list_page_id' => $list_page_id, 
-            'business_name' => $business_name,
-            'event_identifier' => $event_identifier
-          );
-          
-          // no need to continue // we can return a template page with the result
-          return Bizyhood_View::load( 'listings/single/event', $events_args, true );
-          
-        }
-      }
-      
-      if (isset($wp_query->query_vars['bizyhood_name']) && !isset($wp_query->query_vars['bizyhood_id'])) {
-        $events = self::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name']);
-        if ($events !== false && !empty($events)) {
-          $cached_events = json_decode(json_encode($events), true); // convert to array and replace results
-          $business_name = $cached_events[0]['business_name'];
-        }
-      }
-      
-      $events_args = array( 
-        'events' => $cached_events, 
-        'list_page_id' => $list_page_id, 
-        'business_name' => $business_name
-      );
-      
-      return Bizyhood_View::load( 'listings/events', $events_args, true );
-
-    }
-    
-    
-    public function search_shortcode($attrs) {
-      
-      $attributes = shortcode_atts( array(
-        'title' => '',
-        'color_widget_back' => '',
-        'color_cta_back' => '',
-        'color_cta_font' => '',
-        'color_button_back' => '',
-        'color_button_font' => '',
-        'color_label_font' => '',
-        'color_input_back' => '',
-        'color_input_border' => '',
-        'color_input_font' => '',
-        'layout' => 'full',
-        'row1' => 'List your business',
-        'row2' => 'Add now, it\'s free',
-        'widget_id' => uniqid ()
-      ), $attrs );
-      
-      
-      $button_style = $input_style = array();
-      if ($attributes['color_button_back'] != '') {
-        $button_style[] = 'background-color: '. $attributes['color_button_back'] .';';
-      }
-      if ($attributes['color_button_font'] != '') {
-        $button_style[] = 'color: '. $attributes['color_button_font'] .';';
-      }
-      
-      if ($attributes['color_input_back'] != '') {
-        $input_style[] = 'background-color: '. $attributes['color_input_back'] .';';
-      }
-      if ($attributes['color_input_font'] != '') {
-        $input_style[] = 'color: '. $attributes['color_input_font'] .';';
-      }
-      if ($attributes['color_input_border'] != '') {
-        $input_style[] = 'border-color: '. $attributes['color_input_border'] .';';
-      }
-      
-      $attributes['button_style'] = $button_style;
-      $attributes['input_style']  = $input_style;
-
-      return Bizyhood_View::load( 'widgets/search-shortcode', $attributes, true );
-    }
-    
-    
-    
-    
-    
-    public function businesses_group_request($groupd_id)
-    {
-      
-      $client = Bizyhood_oAuth::oAuthClient();
-           
-      if (is_wp_error($client)) {
-        $error = new WP_Error( 'bizyhood_error', $client->get_error_message() );
-        return array('error' => $error);
-      }      
-      
-      
-      $api_url = Bizyhood_Utility::getApiUrl();
-      
-      try {
-        $response = $client->fetch($api_url.'/business/group/'. $groupd_id .'/');
-      } catch (Exception $e) {
-        $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
-        return array('error' => $error);
-      }  
-      
-      // avoid throwing an error
-      if (!is_array($response) || (is_array($response) && isset($response['code']) && $response['code'] != 200)) { return false; }
-      
-      return $response;
-      
-    }
-    public function businesses_group($attrs)
-    {
-      $attributes = shortcode_atts( array(
-        'group' => false, // group id 
-      ), $attrs );
-    
-      
-      $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-      if (is_wp_error($authetication)) {
-        return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
-      }
-      
-      if (Bizyhood_oAuth::checkoAuthData() == false || get_transient('bizyhood_oauth_data') === false) {
-        return Bizyhood_View::load( 'listings/error', array( 'error' => 'oAuth Failed'), true );
-      }
-      if ($attrs['group'] === false) {
-        return Bizyhood_View::load( 'listings/error', array( 'error' => 'The Group ID is required'), true );
-      }
-            
-      $response = self::businesses_group_request($attrs['group']);
-      
-      // avoid throwing an error
-      if ($response === false || $response['result'] === null || empty($response['result'])) { return; }
-      
-      $businesses = $response['result']['results'];
-      $total_count = $response['result']['total_count'];
-
-      $view_business_page_id = Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID);
-            
-      return Bizyhood_View::load( 'listings/group', array( 'businesses' => $businesses, 'view_business_page_id' => $view_business_page_id ), true );
-      
-    }
-    public function businesses_shortcode($attrs)
-    {
-      
-        $attributes = shortcode_atts( array(
-          'search_widget' => 'on', // set to off to disable the search widget before the directory content
-        ), $attrs );
-      
-        
-        $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-        if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
-          return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
-        }
-        
-        
-        $q = $this->businesses_information($attrs);
-        
-        if (isset($q['error'])) {
-          $error = $q['error'];
-          return Bizyhood_View::load( 'listings/error', array( 'error' => $error->get_error_message()), true );
-        }
-        
-        $list_page_id = $q['list_page_id'];
-        $page = $q['page'];
-       
-        $businesses     = $q['businesses'];
-        $keywords       = $q['keywords'];
-        $categories     = $q['categories'];
-        $show_category_facets = $q['show_category_facets'];
-        $cf             = $q['category'];
-        $total_count    = $q['total_count'];
-        $page_size      = $q['page_size'];
-        $page_count     = 0;
-        
-        if ($page_size > 0) {
-            $page_count = ( $total_count / $page_size ) + ( ( $total_count % $page_size == 0 ) ? 0 : 1 );
-        }
-        $pagination_args = array(
-            'total'              => $page_count,
-            'current'            => $page,
-            'type'               => 'list',
-        );
-        $view_business_page_id = Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID);
-        
-        return Bizyhood_View::load( 'listings/index', array( 'keywords' => (isset($keywords) ? $keywords : ''), 'categories' => (isset($categories) ? $categories : ''), 'show_category_facets' => $show_category_facets,'cf' => (isset($cf) ? $cf : ''), 'list_page_id' => $list_page_id, 'pagination_args' => $pagination_args, 'businesses' => $businesses, 'view_business_page_id' => $view_business_page_id, 'search_widget' => $attributes['search_widget'] ), true );
-    }
-    
-    
-    
     /**
      * Sets and returns cached API results as a transient
      * @param string $transient_name The name of the transient to get or set
@@ -1945,14 +778,14 @@ class Bizyhood_Core
      * @param boolean $random Either to return on random result or all of them
      * @return array transient result(s) or false
      */
-    public function get_cache_value($transient_name, $transient_key = 'response_json', $method_name, $attrs, $method_command = null, $random = false) {
+    public static function get_cache_value($transient_name, $transient_key = 'response_json', $method_name, $attrs, $method_command = null, $random = false) {
       
       // cache the results
       if (get_transient($transient_name) === false || get_transient($transient_name) == '') {
         
         // get businesses
 
-        $transient = Bizyhood_Core::$method_name($attrs, $method_command);
+        $transient = Bizyhood_ApiCalls::$method_name($attrs, $method_command);
         
         set_transient($transient_name, $transient[$transient_key], self::API_CACHE_TIME);
       }
@@ -1988,8 +821,8 @@ class Bizyhood_Core
         // no reason to continue if we do not have oAuth token
         if (get_transient('bizyhood_oauth_data') === false) {
           $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-          if (is_wp_error($authetication)) {
-            return Bizyhood_View::load( 'listings/error', array( 'error' => $authetication->get_error_message()), true );
+          if (is_wp_error($authetication) || $authetication === false) {
+            return Bizyhood_View::load( 'listings/error', array( 'error' => 'Can not authenticate to the Bizyhood API'), true );
           }
         }
 
@@ -2000,7 +833,7 @@ class Bizyhood_Core
             $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
             $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID); 
             
-            $single_business_information = self::single_business_information();
+            $single_business_information = Bizyhood_ApiCalls::single_business_information();
                                     
             if ($single_business_information === NULL) {
               $business_view_page = get_page_by_path( 'business-directory' );
@@ -2045,8 +878,8 @@ class Bizyhood_Core
             
             // get promotions and events only for claimed businesses
 
-            $events     = self::single_business_additional_info('events', $business->bizyhood_id);
-            $promotions = self::single_business_additional_info('promotions', $business->bizyhood_id);
+            $events     = Bizyhood_ApiCalls::single_business_additional_info('events', $business->bizyhood_id);
+            $promotions = Bizyhood_ApiCalls::single_business_additional_info('promotions', $business->bizyhood_id);
 
             if ($events !== false && !empty($events)) {
               $business->latest_event = $events[0]; 
@@ -2144,8 +977,8 @@ class Bizyhood_Core
         return;
       }
 
-      $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
-      $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+      $bizyhood_name = (isset($wp_query->query_vars['bizyhood_name']) ? urldecode($wp_query->query_vars['bizyhood_name']) : false);
+      $bizyhood_id = (isset($wp_query->query_vars['bizyhood_id']) ? urldecode($wp_query->query_vars['bizyhood_id']) : false);
               
       if ($bizyhood_name == self::RSS_SUFFIX || $bizyhood_id == self::RSS_SUFFIX) {
         
@@ -2157,8 +990,8 @@ class Bizyhood_Core
         $business_name = '';
         
         $authetication = Bizyhood_oAuth::set_oauth_temp_data();
-        if (is_wp_error($authetication) || Bizyhood_oAuth::checkoAuthData() == false) {
-          Bizyhood_View::load( 'rss/error', array( 'error' => $authetication->get_error_message()), false );
+        if (is_wp_error($authetication) || $authetication === false) {
+          Bizyhood_View::load( 'rss/error', array( 'error' => 'Can not authenticate to the Bizyhood API'), false );
           die;
         }
         
@@ -2178,7 +1011,7 @@ class Bizyhood_Core
         
         
         if (isset($wp_query->query_vars['bizyhood_name']) && $wp_query->query_vars['bizyhood_name'] != self::RSS_SUFFIX ) {
-          $results = self::single_business_additional_info($current_page, $wp_query->query_vars['bizyhood_name']);
+          $results = Bizyhood_ApiCalls::single_business_additional_info($current_page, $wp_query->query_vars['bizyhood_name']);
           if ($results !== false && !empty($results)) {
             $cached_results = json_decode(json_encode($results), true); // convert to array and replace results
             $business_name = $cached_results[0]['business_name'];
