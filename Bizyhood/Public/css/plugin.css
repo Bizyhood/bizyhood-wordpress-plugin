@@ -439,6 +439,8 @@ ul.bh_list .bh_list_item img {
   transition: all 0.5s;
 }
 
+.bh_noresults p { padding: 10px; }
+
 @media (max-width: 992px) {
   .bh_gallery-list .bh_gallery-thumb {width:33%;}
   .row.rowgrid [class*="col-"] {
