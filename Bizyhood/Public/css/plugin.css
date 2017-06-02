@@ -466,4 +466,6 @@ ul.bh_list .bh_list_item img {
   .bizyhood_wrap .row.rowgrid [class*="col-"] {
     border-left: 1px solid rgba(0,0,0,.25);
   }
+  
+  li.bh_list_item .bh_info_wrap { width: 77%; margin-right: 3%; }
 }
