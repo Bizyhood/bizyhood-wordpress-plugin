@@ -1,5 +1,5 @@
 <div class="row bh_business-header">
-    <div class="col-md-12 bh_business-header-title">	
+    <div class="col-md-8 bh_business-header-title">	
         <h3><?php echo ($business_name != '' ? $business_name.' ' : ''); ?>Promotions</h3>
     </div>
 </div>
@@ -11,22 +11,14 @@
     $view_promotions_page_id  = Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID);
         
     ?>
-    <div class="row bh_promotion-content promotions_page">	
     <?php
       
-      $index = 0;
       foreach($promotions as $promotion) {
         
         $single_promotion_link    = get_permalink( $view_promotions_page_id ).$promotion['business_identifier'].'/'.$promotion['identifier'].'/';
         $business_promotions_link = get_permalink( $view_promotions_page_id ).$promotion['business_identifier'].'/';
         $business_link            = get_permalink( $view_business_page_id ).$promotion['business_slug'].'/'.$promotion['business_identifier'].'/';
                 
-        if ($index != 0 && ($index%2 == false)) {
-          ?>
-          </div><div class="row bh_promotion-content promotions_page">	
-          <?php
-        }    
-        $index++;
         
         // set the default logo
         //$promotion['business_logo'] = Bizyhood_Utility::getDefaultLogo();
@@ -40,10 +32,8 @@
         }
         
      ?>
-        <div class="col-md-6">
-          <div class="bh_border">
-          
-            <div class="row no-gutter">
+    <div class="row">	
+        <div class="col-md-8">
             <?php
             // removing until we have the data
             /*
@@ -54,18 +44,25 @@
               </div>
             */
             ?>
-            <div class="col-sm-12">
-                <h3><a title="<?php echo htmlentities($promotion['business_name']); ?>" href="<?php echo get_permalink( $view_business_page_id ); ?><?php echo $promotion['business_slug'].'/'.$promotion['business_identifier']; ?>/"><span class="business_name"><?php echo $promotion['business_name']; ?></span></a></h3>
-                <h4><span class="promotion_name"><a href="<?php echo $single_promotion_link; ?>" title="<?php echo 'More about '. $promotion['name']; ?>"><?php echo $promotion['name']; ?></a></span></h4>
-                
-                <span class="promotion_description"><?php echo $promotion['details']; ?></span>
-                <?php echo $dates; ?>
-              </div>
-            </div>
-
-          </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><a title="<?php echo htmlentities($promotion['business_name']); ?>" href="<?php echo get_permalink( $view_business_page_id ); ?><?php echo $promotion['business_slug'].'/'.$promotion['business_identifier']; ?>/"><span class="business_name"><?php echo $promotion['business_name']; ?></span></a></h3>
+                </div>
+                <div class="panel-body">
+                    <h4><span class="promotion_name"><a href="<?php echo $single_promotion_link; ?>" title="<?php echo 'More about '. $promotion['name']; ?>"><?php echo $promotion['name']; ?></a></span></h4>
+                    <?php if (isset($promotion['image']) && !empty($promotion['image'])) { ?>
+                    <div class="col-md-4">
+                        <img src="<?php echo $promotion['image']['url'] ?>"/>
+                    </div>
+                    <?php } ?>
+                    <div<?php if (isset($promotion['image']) && !empty($promotion['image'])) { ?> class="col-md-8"<?php } ?>>
+                        <span class="promotion_description"><?php echo $promotion['details']; ?></span>
+                    </div>
+                </div>
+                <div class="panel-footer"><?php echo $dates; ?></div>
+            </div>            
         </div>
-      
+    </div>
 <?php
       }
     ?>
