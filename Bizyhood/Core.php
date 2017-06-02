@@ -18,9 +18,9 @@ require_once dirname(__FILE__) . '/Public/vendor/OAuth2/Client.php';
 require_once dirname(__FILE__) . '/Public/vendor/OAuth2/GrantType/IGrantType.php';
 require_once dirname(__FILE__) . '/Public/vendor/OAuth2/GrantType/ClientCredentials.php';
 require_once dirname(__FILE__) . '/oAuth.php';
-require_once dirname(__FILE__) . '/ApiCalls.php';
+require_once dirname(__FILE__) . '/Api.php';
 require_once dirname(__FILE__) . '/Shortcodes.php';
-require_once dirname(__FILE__) . '/Seo.php';
+require_once dirname(__FILE__) . '/Sitemap.php';
 require_once dirname(__FILE__) . '/Meta.php';
 require_once dirname(__FILE__) . '/Bizybox.php';
 
@@ -340,21 +340,21 @@ class Bizyhood_Core
         add_action( 'wp_loaded', array($this, 'bizyhood_flush_rules') );
         
         // add SEO plugins support
-        $Bizyhood_Seo = new Bizyhood_Seo;
+        $Bizyhood_Sitemap = new Bizyhood_Sitemap;
         
         // Yoast SEO additions START
         
-        add_action( 'init', array( $Bizyhood_Seo, 'sitemap_init' ), 10 );
-        add_action('wpseo_do_sitemap_bizyhood-sitemap', array($Bizyhood_Seo, 'bizyhood_create_sitemap') );
-        add_filter( 'wpseo_sitemap_index', array($Bizyhood_Seo, 'bizyhood_addtoindex_sitemap') );
+        add_action( 'init', array( $Bizyhood_Sitemap, 'sitemap_init' ), 10 );
+        add_action('wpseo_do_sitemap_bizyhood-sitemap', array($Bizyhood_Sitemap, 'bizyhood_create_sitemap') );
+        add_filter( 'wpseo_sitemap_index', array($Bizyhood_Sitemap, 'bizyhood_addtoindex_sitemap') );
         
         // Yoast SEO additions END      
 
         // AIOSP START
         
-        add_filter( 'aiosp_sitemap_extra', array( $Bizyhood_Seo, 'aiosp_sitemap_init' ), 10 );
-        add_filter( 'aiosp_sitemap_custom_bizyhood', array( $Bizyhood_Seo, 'bizy_add_aioseo_pages' ), 10, 3 );
-        add_filter( 'aiosp_sitemap_addl_pages', array( $Bizyhood_Seo, 'bizy_add_aioseo_pages' ), 10, 1 );
+        add_filter( 'aiosp_sitemap_extra', array( $Bizyhood_Sitemap, 'aiosp_sitemap_init' ), 10 );
+        add_filter( 'aiosp_sitemap_custom_bizyhood', array( $Bizyhood_Sitemap, 'bizy_add_aioseo_pages' ), 10, 3 );
+        add_filter( 'aiosp_sitemap_addl_pages', array( $Bizyhood_Sitemap, 'bizy_add_aioseo_pages' ), 10, 1 );
         
         // AIOSP END
         
@@ -785,7 +785,7 @@ class Bizyhood_Core
         
         // get businesses
 
-        $transient = Bizyhood_ApiCalls::$method_name($attrs, $method_command);
+        $transient = Bizyhood_Api::$method_name($attrs, $method_command);
         
         set_transient($transient_name, $transient[$transient_key], self::API_CACHE_TIME);
       }
@@ -833,7 +833,7 @@ class Bizyhood_Core
             $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
             $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID); 
             
-            $single_business_information = Bizyhood_ApiCalls::single_business_information();
+            $single_business_information = Bizyhood_Api::single_business_information();
                                     
             if ($single_business_information === NULL) {
               $business_view_page = get_page_by_path( 'business-directory' );
@@ -878,8 +878,8 @@ class Bizyhood_Core
             
             // get promotions and events only for claimed businesses
 
-            $events     = Bizyhood_ApiCalls::single_business_additional_info('events', $business->bizyhood_id);
-            $promotions = Bizyhood_ApiCalls::single_business_additional_info('promotions', $business->bizyhood_id);
+            $events     = Bizyhood_Api::single_business_additional_info('events', $business->bizyhood_id);
+            $promotions = Bizyhood_Api::single_business_additional_info('promotions', $business->bizyhood_id);
 
             if ($events !== false && !empty($events)) {
               $business->latest_event = $events[0]; 
@@ -1011,7 +1011,7 @@ class Bizyhood_Core
         
         
         if (isset($wp_query->query_vars['bizyhood_name']) && $wp_query->query_vars['bizyhood_name'] != self::RSS_SUFFIX ) {
-          $results = Bizyhood_ApiCalls::single_business_additional_info($current_page, $wp_query->query_vars['bizyhood_name']);
+          $results = Bizyhood_Api::single_business_additional_info($current_page, $wp_query->query_vars['bizyhood_name']);
           if ($results !== false && !empty($results)) {
             $cached_results = json_decode(json_encode($results), true); // convert to array and replace results
             $business_name = $cached_results[0]['business_name'];

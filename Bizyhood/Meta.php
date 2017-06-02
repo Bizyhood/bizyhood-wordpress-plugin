@@ -40,81 +40,28 @@ if ( !function_exists( 'add_action' ) ) {
         return $buffer;
       }
       
+      
       $metadata = array();
       
       // overview page metadata
       if (is_page($overview_page)) {
         
-      
-        $single_business_information = Bizyhood_ApiCalls::single_business_information();
-        
-        $business = '';
-        
-        if($single_business_information === false || !isset($single_business_information->name)) {
-          return $buffer;
-        } else {
-         $business = $single_business_information; 
-        }
-        
-        $metadata['title'] = htmlentities($business->name .', '. $business->locality .', '. $business->region .' '. $business->postal_code .' - '.get_bloginfo('name'));
-        $metadata['canonical'] = get_permalink($overview_page)  . $business->slug .'/'.$business->bizyhood_id .'/';
-
-        if ($business->claimed == 1 && $business->description != '') {
-          $metadata['description'] = wp_trim_words(htmlentities($business->description), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
-        } else {
-          $metadata['description'] = htmlentities($business->name.' is a hyper-local, small business, located in and/or serving the '. $business->locality .', '. $business->region .' area.');
-        }
-        
-        
-        if($business->business_logo) {
-          $metadata['logo'] = $business->business_logo->image->url;
-        }
+        $metadata = self::get_single_page_meta($overview_page);
+       
       }
       
       // overview page metadata
       if (is_page($events_page) && isset($wp_query->query_vars['bizyhood_id']) && $wp_query->query_vars['bizyhood_id'] != '') {
-
-        $bizyhood_name = '';
         
-        $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
-        $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
-        
-        $single_event_information = Bizyhood_ApiCalls::single_business_additional_info('events', $bizyhood_name, $bizyhood_id);
-        
-        $business = '';
-        
-        if($single_event_information === false || !isset($single_event_information->name)) {
-          return $buffer;
-        }
-        
-        $metadata['title'] = htmlentities($single_event_information->name .', '. $single_event_information->business_name .' - '.get_bloginfo('name'));
-        $metadata['canonical'] = get_permalink($events_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
-        $metadata['description'] = wp_trim_words(htmlentities($single_event_information->description), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
+        $metadata = self::get_event_page_meta($events_page, $wp_query);
 
       }
       
       // promotions page metadata
       if (is_page($promotions_page) && isset($wp_query->query_vars['bizyhood_id']) && $wp_query->query_vars['bizyhood_id'] != '') {
         
+        $metadata = self::get_promotions_page_meta($promotions_page, $wp_query);
         
-        $bizyhood_name = '';
-        
-        $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
-        $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
-
-        
-        $single_promotion_information = Bizyhood_ApiCalls::single_business_additional_info('promotions', $bizyhood_name, $bizyhood_id);
-        
-        $business = '';
-        
-        if($single_promotion_information === false || !isset($single_promotion_information->name)) {
-          return $buffer;
-        }
-        
-        $metadata['title'] = htmlentities($single_promotion_information->name .', '. $single_promotion_information->business_name .' - '.get_bloginfo('name'));
-        $metadata['canonical'] = get_permalink($promotions_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
-        $metadata['description'] = wp_trim_words(htmlentities($single_promotion_information->details), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
-
       }
       
       
@@ -165,4 +112,82 @@ if ( !function_exists( 'add_action' ) ) {
     }
     
     
+    public static function get_single_page_meta($overview_page) {
+      
+      $single_business_information = Bizyhood_Api::single_business_information();
+        
+      $business = '';
+      
+      if($single_business_information === false || !isset($single_business_information->name)) {
+        return $buffer;
+      } else {
+       $business = $single_business_information; 
+      }
+      
+      $metadata['title'] = htmlentities($business->name .', '. $business->locality .', '. $business->region .' '. $business->postal_code .' - '.get_bloginfo('name'));
+      $metadata['canonical'] = get_permalink($overview_page)  . $business->slug .'/'.$business->bizyhood_id .'/';
+
+      if ($business->claimed == 1 && $business->description != '') {
+        $metadata['description'] = wp_trim_words(htmlentities($business->description), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
+      } else {
+        $metadata['description'] = htmlentities($business->name.' is a hyper-local, small business, located in and/or serving the '. $business->locality .', '. $business->region .' area.');
+      }
+      
+      
+      if($business->business_logo) {
+        $metadata['logo'] = $business->business_logo->image->url;
+      }
+      
+      return $metadata;
+      
+    }
+    
+    
+    public static function get_event_page_meta($events_page, $wp_query) {
+      
+      $bizyhood_name = '';
+        
+      $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
+      $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+      
+      $single_event_information = Bizyhood_Api::single_business_additional_info('events', $bizyhood_name, $bizyhood_id);
+      
+      $business = '';
+      
+      if($single_event_information === false || !isset($single_event_information->name)) {
+        return false;
+      }
+      
+      $metadata['title'] = htmlentities($single_event_information->name .', '. $single_event_information->business_name .' - '.get_bloginfo('name'));
+      $metadata['canonical'] = get_permalink($events_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
+      $metadata['description'] = wp_trim_words(htmlentities($single_event_information->description), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
+      
+      return $metadata;
+      
+    }
+    
+    
+    public static function get_promotions_page_meta($promotions_page, $wp_query) {
+      
+      $bizyhood_name = '';
+        
+      $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
+      $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
+
+      
+      $single_promotion_information = Bizyhood_Api::single_business_additional_info('promotions', $bizyhood_name, $bizyhood_id);
+      
+      $business = '';
+      
+      if($single_promotion_information === false || !isset($single_promotion_information->name)) {
+        return false;
+      }
+      
+      $metadata['title'] = htmlentities($single_promotion_information->name .', '. $single_promotion_information->business_name .' - '.get_bloginfo('name'));
+      $metadata['canonical'] = get_permalink($promotions_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
+      $metadata['description'] = wp_trim_words(htmlentities($single_promotion_information->details), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
+      
+    
+      return $metadata;
+    }
   }

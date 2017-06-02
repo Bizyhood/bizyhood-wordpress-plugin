@@ -9,10 +9,10 @@ if ( !function_exists( 'add_action' ) ) {
 /**
  * This class contains all calls methods to be made to the Bizyhood API.
  */
-  class Bizyhood_ApiCalls
+  class Bizyhood_Api
   {
     
-    public function single_business_information($bizyhood_id = '')
+    public static function single_business_information($bizyhood_id = '')
     {
       
       global $wp_query;
@@ -221,7 +221,7 @@ if ( !function_exists( 'add_action' ) ) {
       return $return;
     }
     
-     public function single_business_additional_info($info_request = '', $business_identifier = '', $bizyhood_id = '')
+     public static function single_business_additional_info($info_request = '', $business_identifier = '', $bizyhood_id = '')
     {
       
       global $wp_query;

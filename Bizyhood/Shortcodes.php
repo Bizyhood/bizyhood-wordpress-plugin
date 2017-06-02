@@ -27,7 +27,7 @@ class Bizyhood_Shortcodes
         }
         
         
-        $q = Bizyhood_ApiCalls::businesses_information($attrs);
+        $q = Bizyhood_Api::businesses_information($attrs);
         
         if (isset($q['error'])) {
           $error = $q['error'];
@@ -87,7 +87,7 @@ class Bizyhood_Shortcodes
 
       if (isset($wp_query->query_vars['bizyhood_name']) && isset($wp_query->query_vars['bizyhood_id'])) {
         
-        $promotions = Bizyhood_ApiCalls::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
+        $promotions = Bizyhood_Api::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
         
         if ($promotions !== false && !empty($promotions) && !empty($promotions->identifier)) {
           
@@ -107,7 +107,7 @@ class Bizyhood_Shortcodes
       }
       
       if (isset($wp_query->query_vars['bizyhood_name']) && !isset($wp_query->query_vars['bizyhood_id'])) {
-        $promotions = Bizyhood_ApiCalls::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name']);
+        $promotions = Bizyhood_Api::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name']);
         
         if ($promotions !== false && !empty($promotions)) {
           $cached_promotions = json_decode(json_encode($promotions), true); // convert to array and replace results
@@ -151,7 +151,7 @@ class Bizyhood_Shortcodes
       $list_page_id = Bizyhood_Utility::getOption(Bizyhood_Core::KEY_MAIN_PAGE_ID);
       
       if (isset($wp_query->query_vars['bizyhood_name']) && isset($wp_query->query_vars['bizyhood_id'])) {
-        $events = Bizyhood_ApiCalls::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
+        $events = Bizyhood_Api::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
         
         if ($events !== false && !empty($events) && !empty($events->identifier)) {
           $cached_events = array();
@@ -173,7 +173,7 @@ class Bizyhood_Shortcodes
       }
       
       if (isset($wp_query->query_vars['bizyhood_name']) && !isset($wp_query->query_vars['bizyhood_id'])) {
-        $events = Bizyhood_ApiCalls::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name']);
+        $events = Bizyhood_Api::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name']);
         if ($events !== false && !empty($events)) {
           $cached_events = json_decode(json_encode($events), true); // convert to array and replace results
           $business_name = $cached_events[0]['business_name'];
@@ -210,7 +210,7 @@ class Bizyhood_Shortcodes
         return Bizyhood_View::load( 'listings/error', array( 'error' => 'Can not authenticate to the Bizyhood API'), true );
       }
       
-      $q = Bizyhood_ApiCalls::businesses_information($filtered_attributes);
+      $q = Bizyhood_Api::businesses_information($filtered_attributes);
         
       if (isset($q['error'])) {
         $error = $q['error'];
@@ -310,7 +310,7 @@ class Bizyhood_Shortcodes
         return Bizyhood_View::load( 'listings/error', array( 'error' => $error), true );
       }
       
-      $response = Bizyhood_ApiCalls::businesses_group_request($attrs['group']);
+      $response = Bizyhood_Api::businesses_group_request($attrs['group']);
       
       // avoid throwing an error
       if ($response === false || $response['result'] === null || empty($response['result'])) { return; }
