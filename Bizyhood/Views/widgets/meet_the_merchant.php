@@ -56,7 +56,20 @@ class bizy_mtm_widget extends WP_Widget {
       'paid'      => (isset($instance['paid']) ? $instance['paid'] : 'n'),
       'ps'        => 25
     );
-    $business = Bizyhood_Core::get_cache_value('bizyhood_mtm_widget', 'businesses', 'businesses_information', $atts, null, true);
+    
+    $response = false;
+    if ($instance['group'] != '') {
+      $response = Bizyhood_Api::businesses_group_request($instance['group']);
+    }
+    
+    if (!($response === false || $response['result'] === null || empty($response['result']))) {
+      // pick a random result
+      $business_array = $response['result']['results'][array_rand($response['result']['results'])];      
+      // convert to object
+      $business = json_decode(json_encode($business_array), FALSE);
+    } else {
+      $business = Bizyhood_Core::get_cache_value('bizyhood_mtm_widget', 'businesses', 'businesses_information', $atts, null, true);
+    }
         
     // if no businesses are found exit with an error message
     if ($business === false || empty($business)) {
@@ -73,8 +86,8 @@ class bizy_mtm_widget extends WP_Widget {
       $business_logo_height = Bizyhood_Core::BUSINESS_LOGO_HEIGHT;
     } else {
       $business_logo_url = $business->business_logo->image->url;
-      $business_logo_width = $business->business_logo->image_width;
-      $business_logo_height = $business->business_logo->image_height;
+      $business_logo_width = (isset($business->business_logo->image_width) ? $business->business_logo->image_width : '');
+      $business_logo_height = (isset($business->business_logo->image_height) ? $business->business_logo->image_height : '');
     }
     
     $intro = ! empty( $instance['intro'] ) ? $instance['intro'] : '';
@@ -171,6 +184,7 @@ class bizy_mtm_widget extends WP_Widget {
 		$color_business_font = ! empty( $instance['color_business_font'] ) ? $instance['color_business_font'] : self::$default_colors['color_business_font'];
     $logo_size = ! empty( $instance['logo_size'] ) ? $instance['logo_size'] : 'large';
     $paid = ! empty( $instance['paid'] ) ? $instance['paid'] : 'n';
+    $group = ! empty( $instance['group'] ) ? $instance['group'] : '';
     
     $uid = uniqid ();
 		?>
@@ -185,6 +199,13 @@ class bizy_mtm_widget extends WP_Widget {
         <option value="y" <?php echo ($paid == 'y' ? 'selected="selected"': ''); ?>><?php _e( 'Yes, include only paying businesses', 'bizyhood' ); ?></option>
       </select>
 		</p>
+
+    <p>
+      <label for="<?php echo $this->get_field_id( 'group' ); ?>"><?php _e( 'Group ID:' ); ?></label> 
+      <input placeholder="Group ID results only" class="widefat" id="<?php echo $this->get_field_id( 'group' ); ?>" name="<?php echo $this->get_field_name( 'group' ); ?>" type="text" value="<?php echo esc_attr( $group ); ?>">
+      <small><?php echo  __('This will override the above "Paying only Business" selection', 'bizyhood' ); ?></small>
+		</p>
+    
 		<p>
       <label for="<?php echo $this->get_field_id( 'layout' ); ?>"><?php _e( 'Layout:', 'bizyhood' ); ?></label> 
       <select class="widefat" id="<?php echo $this->get_field_id( 'layout' ); ?>" name="<?php echo $this->get_field_name( 'layout' ); ?>">
@@ -301,6 +322,7 @@ class bizy_mtm_widget extends WP_Widget {
 		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
 		$instance['layout'] = ( ! empty( $new_instance['layout'] ) ) ? strip_tags( $new_instance['layout'] ) : '';
 		$instance['paid'] = ( ! empty( $new_instance['paid'] ) ) ? strip_tags( $new_instance['paid'] ) : '';
+		$instance['group'] = ( ! empty( $new_instance['group'] ) ) ? strip_tags( $new_instance['group'] ) : '';
 		$instance['intro'] = ( ! empty( $new_instance['intro'] ) ) ? strip_tags( $new_instance['intro'] ) : '';
 		$instance['row1'] = ( ! empty( $new_instance['row1'] ) ) ? strip_tags( $new_instance['row1'] ) : '';
 		$instance['row2'] = ( ! empty( $new_instance['row2'] ) ) ? strip_tags( $new_instance['row2'] ) : '';
