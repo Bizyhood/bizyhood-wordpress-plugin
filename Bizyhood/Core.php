@@ -54,7 +54,7 @@ class Bizyhood_Core
     CONST EXCERPT_MAX_LENGTH      = 20;
     CONST META_DESCRIPTION_LENGTH = 80;
     CONST CATEGORIES_LENGTH       = 35;
-    CONST BOOTSTRAP_VERSION       = '3.3.5';
+    CONST BOOTSTRAP_VERSION       = '3.3.7';
     CONST GOOGLEMAPS_API_KEY      = 'AIzaSyBJvxrmMgNs6vQAJ9BUgzr7nG0KHKK9cns';
     CONST BTN_BG_COLOR            = 'bh_btn_bg_color';
     CONST BTN_FONT_COLOR          = 'bh_btn_font_color';

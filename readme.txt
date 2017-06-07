@@ -103,7 +103,7 @@ Bizyhood is a software company based in Asbury Park, NJ that believes in the pow
 
 == Changelog ==
 
-= 1.3 =
+= 1.3.0.1 =
 
 * Added support for content groups in MTM widget
 * Added new shortcode to list businesses in a specified content group
