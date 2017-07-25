@@ -20,7 +20,7 @@
                     </p>
                 </div>
               </div>
-              <img itemprop="image" class="pull-right" src="<?php echo $business->business_logo->image->url ?>"/>
+              <img itemprop="image" class="pull-right" src="<?php echo $business->business_logo->url ?>"/>
               
               <div class="clear clearfix"></div>
             </li><!-- /.col-md-4 -->

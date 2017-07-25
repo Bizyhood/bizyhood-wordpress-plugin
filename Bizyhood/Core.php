@@ -882,15 +882,15 @@ class Bizyhood_Core
             $promotions = Bizyhood_Api::single_business_additional_info('promotions', $business->bizyhood_id);
 
             if ($events !== false && !empty($events)) {
-              $business->latest_event = $events[0]; 
+              $latest_event = $events[0];
             } else {
-              $business->latest_event = '';
+              $latest_event = '';
             }
 
             if ($promotions !== false && !empty($promotions)) {
-              $business->latest_promotion = $promotions[0]; 
+              $latest_promotion = $promotions[0];
             } else {
-              $business->latest_promotion = '';
+              $latest_promotion = '';
             }
             
             
@@ -901,19 +901,16 @@ class Bizyhood_Core
             $show_first_row          = false;
             
             if ($business->claimed == 1) {
-              if (isset($business->latest_event) && !empty($business->latest_event)) {
+              if (isset($latest_event) && !empty($latest_event)) {
                 $top_columns_count++;
               }
               if (isset($business->news) && !empty($business->news)) {
                 $top_columns_count++;
               }
-              if (isset($business->latest_promotion) && !empty($business->latest_promotion)) {
+              if (isset($latest_promotion) && !empty($latest_promotion)) {
                 $top_columns_count++;
               }
-              if (isset($business->feedback) && !empty($business->feedback)) {
-                $top_columns_count++;
-              }
-              
+
               if ($top_columns_count > 0) {
                 $show_first_row = true;
                 $top_columns = $top_columns / $top_columns_count; // avoid devision by zero
@@ -946,6 +943,8 @@ class Bizyhood_Core
               'show_first_row' => $show_first_row, 
               'location_column_width' => $location_column_width, 
               'show_contact_details' => $show_contact_details,
+              'latest_event' => $latest_event,
+              'latest_promotion' => $latest_promotion,
               'url' => get_permalink( Bizyhood_Utility::getOption(self::KEY_OVERVIEW_PAGE_ID) ).$business->slug.'/'.$business->bizyhood_id.'/'
             );
             

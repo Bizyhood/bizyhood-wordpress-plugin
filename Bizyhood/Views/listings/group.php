@@ -23,10 +23,10 @@
               <?php if (!empty($business['business_logo'])) { ?>
                 <img itemprop="image" 
                   class="pull-right" 
-                  src="<?php echo $business['business_logo']['image']['url'] ?>" 
+                  src="<?php echo $business['business_logo']['url'] ?>"
                   alt="<?php echo $business['business_logo']['title']; ?>"
-                  width="<?php echo $business['business_logo']['image']['width']; ?>"
-                  height="<?php echo $business['business_logo']['image']['height']; ?>"
+                  width="<?php echo $business['business_logo']['width']; ?>"
+                  height="<?php echo $business['business_logo']['height']; ?>"
                   />
               <?php } ?>
               <div class="clear clearfix"></div>

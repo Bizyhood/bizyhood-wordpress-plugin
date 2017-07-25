@@ -85,9 +85,9 @@ class bizy_mtm_widget extends WP_Widget {
       $business_logo_width = Bizyhood_Core::BUSINESS_LOGO_WIDTH;;
       $business_logo_height = Bizyhood_Core::BUSINESS_LOGO_HEIGHT;
     } else {
-      $business_logo_url = $business->business_logo->image->url;
-      $business_logo_width = (isset($business->business_logo->image_width) ? $business->business_logo->image_width : '');
-      $business_logo_height = (isset($business->business_logo->image_height) ? $business->business_logo->image_height : '');
+      $business_logo_url = $business->business_logo->url;
+      $business_logo_width = (isset($business->business_logo->width) ? $business->business_logo->width : '');
+      $business_logo_height = (isset($business->business_logo->height) ? $business->business_logo->height : '');
     }
     
     $intro = ! empty( $instance['intro'] ) ? $instance['intro'] : '';

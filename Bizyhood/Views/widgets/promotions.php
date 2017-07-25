@@ -113,9 +113,9 @@ class bizy_promotions_widget extends WP_Widget {
         
         if (is_array($img)) {
         
-          $promotion['business_logo']['image']['url'] = $instance['image'];
-          $promotion['business_logo']['image_width'] = $img[0];
-          $promotion['business_logo']['image_height'] = $img[1];
+          $promotion['business_logo']['url'] = $instance['image'];
+          $promotion['business_logo']['width'] = $img[0];
+          $promotion['business_logo']['height'] = $img[1];
         
         } 
       }
@@ -143,7 +143,7 @@ class bizy_promotions_widget extends WP_Widget {
       ?>
       <div class="promotions_fields  promotions_logo td_div" <?php echo $widget_backcolor; ?>>
         <a href="<?php echo get_permalink( $view_business_page_id ); ?><?php echo $promotion['business_slug'].'/'.$promotion['business_identifier']; ?>/" title="<?php echo $promotion['business_name'] .' '. __('promotions', 'bizyhood'); ?>">
-          <img alt="<?php echo $promotion['name']; ?>" src="<?php echo $promotion['business_logo']['image']['url']; ?>" width="<?php echo $promotion['business_logo']['image_width']; ?>" height="<?php echo $promotion['business_logo']['image_height']; ?>" class="<?php echo $logo_size; ?>" />
+          <img alt="<?php echo $promotion['name']; ?>" src="<?php echo $promotion['business_logo']['url']; ?>" width="<?php echo $promotion['business_logo']['width']; ?>" height="<?php echo $promotion['business_logo']['height']; ?>" class="<?php echo $logo_size; ?>" />
         </a>
       </div>
       <?php } ?>

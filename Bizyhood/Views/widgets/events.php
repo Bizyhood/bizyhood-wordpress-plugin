@@ -119,9 +119,9 @@ class bizy_events_widget extends WP_Widget {
         
         if (is_array($img)) {
         
-          $event['business_logo']['image']['url'] = $instance['image'];
-          $event['business_logo']['image_width'] = $img[0];
-          $event['business_logo']['image_height'] = $img[1];
+          $event['business_logo']['url'] = $instance['image'];
+          $event['business_logo']['width'] = $img[0];
+          $event['business_logo']['height'] = $img[1];
         
         } 
       }
@@ -153,7 +153,7 @@ class bizy_events_widget extends WP_Widget {
       ?>
       <div class="events_fields  events_logo td_div" <?php echo $widget_backcolor; ?>>
         <a href="<?php echo get_permalink( $view_business_page_id ); ?><?php echo $event['business_slug'].'/'.$event['business_identifier']; ?>/" title="<?php echo $event['business_name'] .' '. __('events', 'bizyhood'); ?>">
-          <img alt="<?php echo $event['name']; ?>" src="<?php echo $event['business_logo']['image']['url']; ?>" width="<?php echo $event['business_logo']['image_width']; ?>" height="<?php echo $event['business_logo']['image_height']; ?>" class="<?php echo $logo_size;?>" />
+          <img alt="<?php echo $event['name']; ?>" src="<?php echo $event['business_logo']['url']; ?>" width="<?php echo $event['business_logo']['width']; ?>" height="<?php echo $event['business_logo']['height']; ?>" class="<?php echo $logo_size;?>" />
         </a>
       </div>
       

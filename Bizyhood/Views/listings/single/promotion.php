@@ -87,7 +87,7 @@
     analytics.page('Business Promotion', {
         path: location.pathname,
         business_id: '<?php echo $promotion['business_identifier']; ?>',
-        business_name: `<?php echo $promotion['business_name']; ?>`,
+        business_name: '<?php echo $promotion['business_name']; ?>',
         promotion_identifier: '<?php echo $promotion['identifier']; ?>'
     });
 </script>

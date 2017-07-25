@@ -65,29 +65,26 @@
   <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
   
   
-    <?php if (isset($business->latest_promotion) && !empty($business->latest_promotion)) { ?>
+    <?php if (isset($latest_promotion) && !empty($latest_promotion)) { ?>
       <div class="col-md-<?php echo $top_columns; ?> latest_promotion bh_infobox">
         <h3>Promotions</h3>
         <div class="column-inner">
             
             <div class="bh_alert">
-              <h4><?php echo $business->latest_promotion->name; ?></h4>
+              <h4><?php echo $latest_promotion->name; ?></h4>
               <dl class="bh_dl-horizontal">
                 <dt>Date</dt><br />
-                <dd><?php echo Bizyhood_Utility::buildDateTextMicrodata($business->latest_promotion->start, $business->latest_promotion->end, 'promotion', 'promotions'); ?></dd>
+                <dd><?php echo Bizyhood_Utility::buildDateTextMicrodata($latest_promotion->start, $latest_promotion->end, 'promotion', 'promotions'); ?></dd>
               </dl>
-              <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)).$business->bizyhood_id.'/'.$business->latest_promotion->identifier; ?>" title="<?php echo $business->latest_promotion->name; ?> details">View Details &rarr;</a>
+              <a href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)).$business->bizyhood_id.'/'.$latest_promotion->identifier; ?>" title="<?php echo $latest_promotion->name; ?> details">View Details &rarr;</a>
             </div>
             
             <a itemprop="url" class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_PROMOTIONS_PAGE_ID)).$business->bizyhood_id.'/'; ?>" title="All <?php echo $business->name; ?> promotions">All Promotions</a>
         </div>
       </div>
     <?php } ?>
-    
   
-  
-  
-    <?php if (isset($business->latest_event) && !empty($business->latest_event)) { ?>
+    <?php if (isset($latest_event) && !empty($latest_event)) { ?>
       <div class="col-md-<?php echo $top_columns; ?> latest_events bh_infobox event-wrapper" itemscope itemtype="http://schema.org/Event">
             
         <h3>Upcoming Events</h3>
@@ -96,26 +93,26 @@
             <span class="hidden" itemprop="location" itemscope itemtype="http://schema.org/Place">
               <span itemprop="name"><?php echo $business->name ?></span>
               <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                <span itemprop="streetAddress"><?php echo $business->latest_event->address1.', '. $business->latest_event->address2 ?></span><br />
-                <span itemprop="addressLocality"><?php echo $business->latest_event->locality ?></span>, 
-                <span itemprop="addressRegion"><?php echo $business->latest_event->region ?></span> 
-                <span itemprop="postalCode"><?php echo $business->latest_event->postal_code ?></span>
+                <span itemprop="streetAddress"><?php echo $latest_event->address1.', '. $latest_event->address2 ?></span><br />
+                <span itemprop="addressLocality"><?php echo $latest_event->locality ?></span>,
+                <span itemprop="addressRegion"><?php echo $latest_event->region ?></span>
+                <span itemprop="postalCode"><?php echo $latest_event->postal_code ?></span>
               </span>
             </span>
 
             <span class="hidden">
-              <img itemprop="image" src="<?php echo $business->business_logo->image->url ?>"/>
-              <span itemprop="description"><?php echo $business->latest_event->description; ?></span>
-              <time itemprop="endDate" datetime="<?php echo date('c', strtotime($business->latest_event->end));?>"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $business->latest_event->end ) ); ?></time>
+              <img itemprop="image" src="<?php echo $business->business_logo->url ?>"/>
+              <span itemprop="description"><?php echo $latest_event->description; ?></span>
+              <time itemprop="endDate" datetime="<?php echo date('c', strtotime($latest_event->end));?>"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $latest_event->end ) ); ?></time>
             </span>
-            
+
             <div class="bh_alert">
-              <h4 itemprop="name"><?php echo $business->latest_event->name; ?></h4>
+              <h4 itemprop="name"><?php echo $latest_event->name; ?></h4>
               <dl class="bh_dl-horizontal">
                 <dt>Date</dt><br />
-                <dd><time itemprop="startDate" datetime="<?php echo date('c', strtotime($business->latest_event->start));?>"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $business->latest_event->start ) ); ?></time></dd>
+                <dd><time itemprop="startDate" datetime="<?php echo date('c', strtotime($latest_event->start));?>"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $latest_event->start ) ); ?></time></dd>
               </dl>
-              <a itemprop="url" href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_EVENTS_PAGE_ID)).$business->bizyhood_id.'/'.$business->latest_event->identifier; ?>" title="<?php echo $business->latest_event->name; ?> details">View Details &rarr;</a>
+              <a itemprop="url" href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_EVENTS_PAGE_ID)).$business->bizyhood_id.'/'.$latest_event->identifier; ?>" title="<?php echo $latest_event->name; ?> details">View Details &rarr;</a>
             </div>
             
             <a itemprop="url" class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo get_permalink(Bizyhood_Utility::getOption(Bizyhood_Core::KEY_EVENTS_PAGE_ID)).$business->bizyhood_id.'/'; ?>" title="All <?php echo $business->name; ?> events">All Events</a>
@@ -137,21 +134,7 @@
         </div>
       </div>
     <?php } ?>
-    
-    <?php if (isset($business->latest_feedback) && !empty($business->latest_feedback)) { ?>
-      <div class="col-md-<?php echo $top_columns; ?> latest_feedback bh_infobox">
-        <h3>Customer Feedback</h3>
-        <div class="column-inner">
-            
-            <div class="bh_alert">
-              <h4><?php echo $business->latest_feedback->name; ?></h4>
-            </div>
-            
-            <a class="btn btn-info" <?php echo $colors['style']; ?> href="<?php echo $business->feedback_url; ?>" title="All <?php echo $business->name; ?> feedback">All Feedback</a>
-        </div>
-      </div>
-    <?php } ?>
-    
+
   </div><!-- /.row -->
   <?php } ?>
   
@@ -205,11 +188,11 @@
                             if ($hoursindex > 0) { ?>
                               </dd><dt>&nbsp;</dt><dd>
                             <?php } ?>
-                            <span itemprop="opens" content="<?php echo date('c',strtotime($hour_display[0])); ?>">
-                              <?php echo date('g:i a',strtotime($hour_display[0])); ?>
+                            <span itemprop="opens" content="<?php echo date('c',strtotime($hour_display->opens)); ?>">
+                              <?php echo date('g:i a',strtotime($hour_display->opens)); ?>
                             </span>&ndash;
-                            <span itemprop="closes" content="<?php echo date('c',strtotime($hour_display[1])); ?>">
-                              <?php echo date('g:i a',strtotime($hour_display[1])); ?></span> 
+                            <span itemprop="closes" content="<?php echo date('c',strtotime($hour_display->closes)); ?>">
+                              <?php echo date('g:i a',strtotime($hour_display->closes)); ?></span>
                           <?php }
                         } else { 
                           echo $hour->hours_type_name; 
@@ -259,7 +242,7 @@
       <div class="column-inner">
         <?php if($business->business_logo) {?>
           <div itemprop="logo" class="bh_business-avatar pull-left">
-              <img src="<?php echo $business->business_logo->image->url ?>"/>
+              <img src="<?php echo $business->business_logo->url ?>"/>
           </div>
         <?php } ?>
         <?php if ( $business->description ) { ?>
@@ -275,8 +258,8 @@
                 <div itemscope itemtype="http://schema.org/ImageGallery" class="bh_gallery-list clearfix">
                     <?php foreach($business->business_images as $business_image) { ?>
                     <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" class="bh_gallery-thumb">
-                        <a href="<?php echo $business_image->image->url; ?>" itemprop="contentUrl" data-size="<?php echo $business_image->image->width; ?>x<?php echo $business_image->image->height; ?>">
-                            <img src="<?php echo $business_image->image->url; ?>" itemprop="thumbnail" alt="<?php echo $business_image->title; ?>" />
+                        <a href="<?php echo $business_image->url; ?>" itemprop="contentUrl" data-size="<?php echo $business_image->width; ?>x<?php echo $business_image->height; ?>">
+                            <img src="<?php echo $business_image->url; ?>" itemprop="thumbnail" alt="<?php echo $business_image->title; ?>" />
                         </a>
                         <figcaption><?php echo $business_image->title; ?></figcaption>
                     </figure>

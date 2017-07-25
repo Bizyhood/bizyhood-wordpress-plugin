@@ -39,7 +39,7 @@ if ( !function_exists( 'add_action' ) ) {
       }
 
       try {
-        $response = $client->fetch($api_url . "/business/" . $bizyhood_id.'/', $params);
+        $response = $client->fetch($api_url . "/v2/business/" . $bizyhood_id.'/', $params);
       } catch (Exception $e) {
         return false;
       }  
@@ -181,7 +181,7 @@ if ( !function_exists( 'add_action' ) ) {
       }
       
       try {
-        $response = $client->fetch($api_url.'/business/', $params);
+        $response = $client->fetch($api_url.'/v2/search/', $params);
       } catch (Exception $e) {
         $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
         return array('error' => $error);
@@ -256,7 +256,7 @@ if ( !function_exists( 'add_action' ) ) {
       
 
       try {
-        $response = $client->fetch($api_url . '/'. $info_request .($bizyhood_id != '' ? '/' . $bizyhood_id : '').'/', $params);
+        $response = $client->fetch($api_url . '/v2/'. $info_request .($bizyhood_id != '' ? '/' . $bizyhood_id : '').'/', $params);
       } catch (Exception $e) {
         return false;
       }  
@@ -300,7 +300,7 @@ if ( !function_exists( 'add_action' ) ) {
       );
 
       try {
-        $response = $client->fetch($api_url.'/'. $command .'/', $params);
+        $response = $client->fetch($api_url.'/v2/'. $command .'/', $params);
       } catch (Exception $e) {
         $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
         return array('error' => $error);
@@ -340,7 +340,7 @@ if ( !function_exists( 'add_action' ) ) {
       $api_url = Bizyhood_Utility::getApiUrl();
       
       try {
-        $response = $client->fetch($api_url.'/business/group/'. $groupd_id .'/');
+        $response = $client->fetch($api_url.'/v2/business/group/'. $groupd_id .'/');
       } catch (Exception $e) {
         $error = new WP_Error( 'bizyhood_error', __( 'Service is currently unavailable! Request timed out.', 'bizyhood' ) );
         return array('error' => $error);
