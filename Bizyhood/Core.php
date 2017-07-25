@@ -833,7 +833,7 @@ class Bizyhood_Core
             $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
             $list_page_id = Bizyhood_Utility::getOption(self::KEY_MAIN_PAGE_ID); 
             
-            $single_business_information = Bizyhood_Api::single_business_information();
+            $single_business_information = Bizyhood_Api::get_business_details();
                                     
             if ($single_business_information === NULL) {
               $business_view_page = get_page_by_path( 'business-directory' );
@@ -878,8 +878,8 @@ class Bizyhood_Core
             
             // get promotions and events only for claimed businesses
 
-            $events     = Bizyhood_Api::single_business_additional_info('events', $business->bizyhood_id);
-            $promotions = Bizyhood_Api::single_business_additional_info('promotions', $business->bizyhood_id);
+            $events     = Bizyhood_Api::get_business_related_content('events', $business->bizyhood_id);
+            $promotions = Bizyhood_Api::get_business_related_content('promotions', $business->bizyhood_id);
 
             if ($events !== false && !empty($events)) {
               $latest_event = $events[0];
@@ -993,9 +993,10 @@ class Bizyhood_Core
           Bizyhood_View::load( 'rss/error', array( 'error' => 'Can not authenticate to the Bizyhood API'), false );
           die;
         }
-        
+
+        $atts = array();
         // cache the results
-        $cached_results = self::get_cache_value('bizyhood_'. $current_page .'_widget', 'response_json', 'business_details_information', $attrs, $current_page);
+        $cached_results = self::get_cache_value('bizyhood_'. $current_page .'_widget', 'response_json', 'get_all_content_by_type', $atts, $current_page);
               
         if ($cached_results === false) {
           $signup_page_id = Bizyhood_Utility::getOption(self::KEY_SIGNUP_PAGE_ID);
@@ -1010,7 +1011,7 @@ class Bizyhood_Core
         
         
         if (isset($wp_query->query_vars['bizyhood_name']) && $wp_query->query_vars['bizyhood_name'] != self::RSS_SUFFIX ) {
-          $results = Bizyhood_Api::single_business_additional_info($current_page, $wp_query->query_vars['bizyhood_name']);
+          $results = Bizyhood_Api::get_business_related_content($current_page, $wp_query->query_vars['bizyhood_name']);
           if ($results !== false && !empty($results)) {
             $cached_results = json_decode(json_encode($results), true); // convert to array and replace results
             $business_name = $cached_results[0]['business_name'];

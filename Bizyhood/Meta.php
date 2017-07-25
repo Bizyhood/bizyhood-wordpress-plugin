@@ -114,7 +114,7 @@ if ( !function_exists( 'add_action' ) ) {
     
     public static function get_single_page_meta($overview_page) {
       
-      $single_business_information = Bizyhood_Api::single_business_information();
+      $single_business_information = Bizyhood_Api::get_business_details();
         
       $business = '';
       
@@ -150,7 +150,7 @@ if ( !function_exists( 'add_action' ) ) {
       $bizyhood_name = urldecode($wp_query->query_vars['bizyhood_name']);
       $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
       
-      $single_event_information = Bizyhood_Api::single_business_additional_info('events', $bizyhood_name, $bizyhood_id);
+      $single_event_information = Bizyhood_Api::get_business_related_content('events', $bizyhood_name, $bizyhood_id);
       
       $business = '';
       
@@ -175,7 +175,7 @@ if ( !function_exists( 'add_action' ) ) {
       $bizyhood_id = urldecode($wp_query->query_vars['bizyhood_id']);
 
       
-      $single_promotion_information = Bizyhood_Api::single_business_additional_info('promotions', $bizyhood_name, $bizyhood_id);
+      $single_promotion_information = Bizyhood_Api::get_business_related_content('promotions', $bizyhood_name, $bizyhood_id);
       
       $business = '';
       

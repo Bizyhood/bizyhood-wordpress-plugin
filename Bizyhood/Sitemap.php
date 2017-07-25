@@ -86,7 +86,7 @@ class Bizyhood_Sitemap
       if ($max_entries > $apimax) {
         $ps = $apimax;
         $query_params = array('paged' => 1, 'verified' => $verified, 'ps' => $ps);
-        $queryapi = Bizyhood_Api::businesses_information($query_params);
+        $queryapi = Bizyhood_Api::businesses_search($query_params);
         
         
         // max number of pages
@@ -124,7 +124,7 @@ class Bizyhood_Sitemap
           while ($bizyresults < $max_entries && $queryapi['total_count'] > $bizyresults && $bizypaged <= $end) {
                         
             $query_params = array('paged' => $bizypaged, 'verified' => $verified, 'ps' => $ps);
-            $queryapi = Bizyhood_Api::businesses_information($query_params);
+            $queryapi = Bizyhood_Api::businesses_search($query_params);
 
             
             if (!empty($queryapi['businesses'])) {
@@ -168,7 +168,7 @@ class Bizyhood_Sitemap
         
         $ps = $max_entries;
         $query_params = array('paged' => $sitemapnum, 'verified' => $verified, 'ps' => $ps);
-        $queryapi = Bizyhood_Api::businesses_information($query_params);        
+        $queryapi = Bizyhood_Api::businesses_search($query_params);
         
         if (!empty($queryapi['businesses'])) {
           foreach($queryapi['businesses'] as $business) {
@@ -196,7 +196,7 @@ class Bizyhood_Sitemap
     // add sitemap to index
     function bizyhood_addtoindex_sitemap() {
       
-      $getfirstpage = Bizyhood_Api::businesses_information(array('paged' => 1, 'verified' => TRUE, 'ps' => Bizyhood_Core::API_MAX_LIMIT));
+      $getfirstpage = Bizyhood_Api::businesses_search(array('paged' => 1, 'verified' => TRUE, 'ps' => Bizyhood_Core::API_MAX_LIMIT));
       $count  = $getfirstpage['total_count'];
       $yoastoptions = WPSEO_Options::get_all();
       $max_entries  = $yoastoptions['entries-per-page'];
@@ -241,7 +241,7 @@ class Bizyhood_Sitemap
       // initialize array
       if ( empty( $pages ) ) $pages = Array();
       
-      $queryapi = Bizyhood_Api::businesses_information(array('paged' => 1, 'verified' => TRUE, 'ps' => Bizyhood_Core::API_MAX_LIMIT));
+      $queryapi = Bizyhood_Api::businesses_search(array('paged' => 1, 'verified' => TRUE, 'ps' => Bizyhood_Core::API_MAX_LIMIT));
       $numofpages = floor($queryapi['total_count'] / $queryapi['page_size']);
       $urlbase = get_permalink( Bizyhood_Utility::getOption(Bizyhood_Core::KEY_OVERVIEW_PAGE_ID) );
       $date = date("Y-m-d H:i");
@@ -260,7 +260,7 @@ class Bizyhood_Sitemap
       // get the rest of the urls if they exist
       $i = $start + 1; // start  to query the API from the second batch
       while($i <= $numofpages) {
-        $queryapi = Bizyhood_Api::businesses_information(array('paged' => $i, 'verified' => TRUE, 'ps' => Bizyhood_Core::API_MAX_LIMIT));
+        $queryapi = Bizyhood_Api::businesses_search(array('paged' => $i, 'verified' => TRUE, 'ps' => Bizyhood_Core::API_MAX_LIMIT));
         foreach($queryapi['businesses'] as $business) {
           $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
           $pages[] = Array( "loc" => $urlbase.$urlarr[0].'/'.$urlarr[1].'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );

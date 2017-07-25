@@ -27,7 +27,7 @@ class Bizyhood_Shortcodes
         }
         
         
-        $q = Bizyhood_Api::businesses_information($attrs);
+        $q = Bizyhood_Api::businesses_search($attrs);
         
         if (isset($q['error'])) {
           $error = $q['error'];
@@ -74,7 +74,7 @@ class Bizyhood_Shortcodes
       }
       
       // cache the results
-      $cached_promotions = Bizyhood_Core::get_cache_value('bizyhood_promotions_widget', 'response_json', 'business_details_information', $attrs, 'promotions');
+      $cached_promotions = Bizyhood_Core::get_cache_value('bizyhood_promotions_widget', 'response_json', 'get_all_content_by_type', $attrs, 'promotions');
             
       if ($cached_promotions === false) {
         $signup_page_id = Bizyhood_Utility::getOption(Bizyhood_Core::KEY_SIGNUP_PAGE_ID);
@@ -87,7 +87,7 @@ class Bizyhood_Shortcodes
 
       if (isset($wp_query->query_vars['bizyhood_name']) && isset($wp_query->query_vars['bizyhood_id'])) {
         
-        $promotions = Bizyhood_Api::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
+        $promotions = Bizyhood_Api::get_business_related_content('promotions', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
         
         if ($promotions !== false && !empty($promotions) && !empty($promotions->identifier)) {
           
@@ -107,7 +107,7 @@ class Bizyhood_Shortcodes
       }
       
       if (isset($wp_query->query_vars['bizyhood_name']) && !isset($wp_query->query_vars['bizyhood_id'])) {
-        $promotions = Bizyhood_Api::single_business_additional_info('promotions', $wp_query->query_vars['bizyhood_name']);
+        $promotions = Bizyhood_Api::get_business_related_content('promotions', $wp_query->query_vars['bizyhood_name']);
         
         if ($promotions !== false && !empty($promotions)) {
           $cached_promotions = json_decode(json_encode($promotions), true); // convert to array and replace results
@@ -139,7 +139,7 @@ class Bizyhood_Shortcodes
       }
       
       // cache the results
-      $cached_events = Bizyhood_Core::get_cache_value('bizyhood_events_widget', 'response_json', 'business_details_information', $attrs, 'events');
+      $cached_events = Bizyhood_Core::get_cache_value('bizyhood_events_widget', 'response_json', 'get_all_content_by_type', $attrs, 'events');
             
       if ($cached_events === false) {
         $signup_page_id = Bizyhood_Utility::getOption(Bizyhood_Core::KEY_SIGNUP_PAGE_ID);
@@ -151,7 +151,7 @@ class Bizyhood_Shortcodes
       $list_page_id = Bizyhood_Utility::getOption(Bizyhood_Core::KEY_MAIN_PAGE_ID);
       
       if (isset($wp_query->query_vars['bizyhood_name']) && isset($wp_query->query_vars['bizyhood_id'])) {
-        $events = Bizyhood_Api::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
+        $events = Bizyhood_Api::get_business_related_content('events', $wp_query->query_vars['bizyhood_name'], $wp_query->query_vars['bizyhood_id']);
         
         if ($events !== false && !empty($events) && !empty($events->identifier)) {
           $cached_events = array();
@@ -173,7 +173,7 @@ class Bizyhood_Shortcodes
       }
       
       if (isset($wp_query->query_vars['bizyhood_name']) && !isset($wp_query->query_vars['bizyhood_id'])) {
-        $events = Bizyhood_Api::single_business_additional_info('events', $wp_query->query_vars['bizyhood_name']);
+        $events = Bizyhood_Api::get_business_related_content('events', $wp_query->query_vars['bizyhood_name']);
         if ($events !== false && !empty($events)) {
           $cached_events = json_decode(json_encode($events), true); // convert to array and replace results
           $business_name = $cached_events[0]['business_name'];
@@ -210,7 +210,7 @@ class Bizyhood_Shortcodes
         return Bizyhood_View::load( 'listings/error', array( 'error' => 'Can not authenticate to the Bizyhood API'), true );
       }
       
-      $q = Bizyhood_Api::businesses_information($filtered_attributes);
+      $q = Bizyhood_Api::businesses_search($filtered_attributes);
         
       if (isset($q['error'])) {
         $error = $q['error'];

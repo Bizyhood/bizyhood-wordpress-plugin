@@ -12,7 +12,7 @@ if ( !function_exists( 'add_action' ) ) {
   class Bizyhood_Api
   {
     
-    public static function single_business_information($bizyhood_id = '')
+    public static function get_business_details($bizyhood_id = '')
     {
       
       global $wp_query;
@@ -49,7 +49,7 @@ if ( !function_exists( 'add_action' ) ) {
     }
     
     
-    public static function businesses_information($atts)
+    public static function businesses_search($atts)
     {
       
       // no reason to continue if we do not have oAuth token
@@ -221,7 +221,7 @@ if ( !function_exists( 'add_action' ) ) {
       return $return;
     }
     
-     public static function single_business_additional_info($info_request = '', $business_identifier = '', $bizyhood_id = '')
+     public static function get_business_related_content($info_request = '', $business_identifier = '', $bizyhood_id = '')
     {
       
       global $wp_query;
@@ -275,7 +275,7 @@ if ( !function_exists( 'add_action' ) ) {
      * @param string $command data to get promotions (default) and events
      * @return mixed results (array) or error (array) or empty
      */
-    public static function business_details_information($atts, $command = 'promotions')
+    public static function get_all_content_by_type($atts, $command = 'promotions')
     {
       
       

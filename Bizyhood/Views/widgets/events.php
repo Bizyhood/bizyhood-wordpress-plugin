@@ -64,7 +64,7 @@ class bizy_events_widget extends WP_Widget {
     $atts = array();
         
     // cache the results
-    $events = Bizyhood_Core::get_cache_value('bizyhood_events_widget', 'response_json', 'business_details_information', $atts, 'events', false);
+    $events = Bizyhood_Core::get_cache_value('bizyhood_events_widget', 'response_json', 'get_all_content_by_type', $atts, 'events', false);
     
     
     $intro = ! empty( $instance['intro'] ) ? trim($instance['intro']) : '';

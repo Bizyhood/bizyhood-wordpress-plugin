@@ -17,7 +17,7 @@ if ( !function_exists( 'add_action' ) ) {
       $_GET['keywords']  = $_REQUEST['keywords'];
     
       
-      $queryapi = Bizyhood_Api::businesses_information(array('paged' => 1, 'verified' => false, 'ps' => Bizyhood_Core::BIZYBOX_MAX_LIMIT));
+      $queryapi = Bizyhood_Api::businesses_search(array('paged' => 1, 'verified' => false, 'ps' => Bizyhood_Core::BIZYBOX_MAX_LIMIT));
       $numofpages = floor($queryapi['total_count'] / $queryapi['page_size']);
       $urlbase = get_permalink( Bizyhood_Utility::getOption(Bizyhood_Core::KEY_OVERVIEW_PAGE_ID) );
       $date = date("Y-m-d H:i");
