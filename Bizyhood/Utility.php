@@ -213,9 +213,9 @@ class Bizyhood_Utility
       $logo = array();
       
       // set the default
-      $logo['image']['url'] = Bizyhood_Utility::getImageBaseURL().$filename;
-      $logo['image_width']  = Bizyhood_Core::BUSINESS_LOGO_WIDTH;
-      $logo['image_height'] = Bizyhood_Core::BUSINESS_LOGO_HEIGHT;
+      $logo['url'] = Bizyhood_Utility::getImageBaseURL().$filename;
+      $logo['width']  = Bizyhood_Core::BUSINESS_LOGO_WIDTH;
+      $logo['height'] = Bizyhood_Core::BUSINESS_LOGO_HEIGHT;
       
       return $logo;
     }
