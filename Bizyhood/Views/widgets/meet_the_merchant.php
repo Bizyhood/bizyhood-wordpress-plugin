@@ -68,7 +68,7 @@ class bizy_mtm_widget extends WP_Widget {
       // convert to object
       $business = json_decode(json_encode($business_array), FALSE);
     } else {
-      $business = Bizyhood_Core::get_cache_value('bizyhood_mtm_widget', 'businesses', 'businesses_information', $atts, null, true);
+      $business = Bizyhood_Core::get_cache_value('bizyhood_mtm_widget', 'businesses', 'businesses_search', $atts, null, true);
     }
         
     // if no businesses are found exit with an error message
