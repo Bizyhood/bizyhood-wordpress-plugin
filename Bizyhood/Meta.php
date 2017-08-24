@@ -100,7 +100,14 @@ if ( !function_exists( 'add_action' ) ) {
         
         $meta .= '
           <meta property="og:image" content="'. $metadata['logo'] .'" />
+          <meta property="og:image:width" content="'. $metadata['logo_width'] .'" />
+          <meta property="og:image:height" content="'. $metadata['logo_height'] .'" />
         ';
+        if ($metadata['logo_description'] != '') {
+          $meta .= '<meta property="og:image:alt" content="'. $metadata['logo_description'] .'" />';
+        } else {
+          $meta .= '<meta property="og:image:alt" content="'. $metadata['title'] .'" />';
+        }
       }
       
       
@@ -135,7 +142,10 @@ if ( !function_exists( 'add_action' ) ) {
       
       
       if($business->business_logo) {
-        $metadata['logo'] = $business->business_logo->image->url;
+        $metadata['logo'] = $business->business_logo->url;
+        $metadata['logo_width'] = $business->business_logo->width;
+        $metadata['logo_height'] = $business->business_logo->height;
+        $metadata['logo_description'] = $business->business_logo->description;
       }
       
       return $metadata;
@@ -162,6 +172,13 @@ if ( !function_exists( 'add_action' ) ) {
       $metadata['canonical'] = get_permalink($events_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
       $metadata['description'] = wp_trim_words(htmlentities($single_event_information->description), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
       
+      if($single_event_information->image) {
+        $metadata['logo'] = $single_event_information->image->url;
+        $metadata['logo_width'] = $single_event_information->image->width;
+        $metadata['logo_height'] = $single_event_information->image->height;
+        $metadata['logo_description'] = $single_event_information->image->title;
+      }
+      
       return $metadata;
       
     }
@@ -187,6 +204,12 @@ if ( !function_exists( 'add_action' ) ) {
       $metadata['canonical'] = get_permalink($promotions_page) . $wp_query->query_vars['bizyhood_name'] .'/'.$wp_query->query_vars['bizyhood_id'].'/';
       $metadata['description'] = wp_trim_words(htmlentities($single_promotion_information->details), Bizyhood_Core::META_DESCRIPTION_LENGTH, '');
       
+      if($single_promotion_information->image) {
+        $metadata['logo'] = $single_promotion_information->image->url;
+        $metadata['logo_width'] = $single_promotion_information->image->width;
+        $metadata['logo_height'] = $single_promotion_information->image->height;
+        $metadata['logo_description'] = $single_promotion_information->image->title;
+      }
     
       return $metadata;
     }
