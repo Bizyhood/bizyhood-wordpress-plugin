@@ -1,0 +1,93 @@
+<?php
+
+// Make sure we don't expose any info if called directly
+if ( !function_exists( 'add_action' ) ) {
+	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
+	exit;
+}
+
+/**
+ * This class contains all CTA question methods to be made to the Bizyhood API.
+ */
+  class Bizyhood_CTA
+  {
+
+  
+    // do not rename the function
+    public static function question_cta() {
+      
+      $data = array();
+      
+      $bizyhood_id                    = $_POST['bizyhood_id'];
+      $params['text']                 = $_POST['text'];
+      $params['author']['email']      = $_POST['email'];
+      $params['author']['first_name'] = $_POST['first_name'];
+      $params['author']['last_name']  = $_POST['last_name'];
+      
+      $error = array();
+      
+      if (strlen($bizyhood_id) < 30) {
+        $error[] = __('There was an error submitting your request (no business id).', 'bizyhood');
+        
+        $message = implode("<br />", $error);
+        wp_send_json(array('error' => true, 'message' => $message));
+        die();
+      }
+      
+      if (!filter_var($params['author']['email'], FILTER_VALIDATE_EMAIL)) {
+        $error[] = __('Your email seems to be invalid.', 'bizyhood');
+      }
+      
+      if (strlen($params['author']['first_name']) < 1) {
+        $error[] = __('The provided first name seems to be invalid.', 'bizyhood');
+      }
+      
+      
+      if (strlen($params['author']['last_name']) < 1) {
+        $error[] = __('The provided last name seems to be invalid.', 'bizyhood');
+      }
+      
+      // no reason to make the request if the data is invalid
+      if (count($error) > 0) {
+         
+        $message = implode("<br />", $error);
+        wp_send_json(array('error' => true, 'message' => $message));
+        die();
+        
+      }
+      
+      $request = $this->submit_form($bizyhood_id, $params);
+      
+      wp_send_json($request);
+      
+    }
+    
+    
+    public static function submit_form($bizyhood_id, $params)
+    {
+      
+      global $wp_query;
+      
+      $api_url = Bizyhood_Utility::getApiUrl();
+      $client = Bizyhood_oAuth::oAuthClient();
+      
+      if (is_wp_error($client)) {
+        return false;
+      }
+
+      try {
+        $response = $client->fetch($api_url . "/v2/business/" . $bizyhood_id.'/topic/', $client::HTTP_METHOD_POST);
+        
+        // debug
+        // echo 'send to: <pre>'. $api_url . "/v2/business/" . $bizyhood_id.'/topic/'.'</pre>';
+        // echo '<br />data sent: <pre>'.print_r($params, true).'</pre>';
+        
+      } catch (Exception $e) {
+        return false;
+      }  
+      $result = json_decode(json_encode($response['result']), FALSE);
+    
+      return $response;
+    }
+    
+  }

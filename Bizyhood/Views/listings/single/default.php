@@ -63,7 +63,60 @@
   <?php if ($business->claimed == 1 && $show_first_row === true) { ?>
   
   <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
+    <div class="col-md-12 question_cta bh_infobox">
+      <div class="column-inner">
+        <div class="bh_alert text-center">
+          <?php echo __('Have a question?', 'bizyhood'); ?>
+          <a data-toggle="modal" data-target="#question_cta_modal" class="btn btn-info question_cta_btn" <?php echo $colors['style']; ?> href="#" title="<?php echo __('Ask now!', 'bizyhood'); ?>"><?php echo __('Ask now!', 'bizyhood'); ?></a>
+        </div>
+      </div>
+    </div>
+  </div>
   
+  <div id="question_cta_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Ask the business</h4>
+        </div>
+        <div class="modal-body">
+          <form id="question_cta_form" data-business="<?php echo $business->bizyhood_id; ?>">
+            <fieldset>
+              <div class="form-group">
+                <label for="question_cta_fname">First Name</label>
+                <input id="question_cta_fname" name="question_cta_fname" class="form-control" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="question_cta_lname">Last Name</label>
+                <input id="question_cta_lname" name="question_cta_lname" class="form-control" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="question_cta_email">Email</label>
+                <input id="question_cta_email" name="question_cta_email" class="form-control" type="email" />
+              </div>
+              <div class="form-group">
+                <label for="question_cta_message">Question</label>
+                <textarea id="question_cta_message" name="question_cta_message" class="form-control"></textarea>
+              </div>
+              
+              <button type="submit" class="btn btn-info" <?php echo $colors['style']; ?>>Submit</button>
+            </fieldset>
+          </form>
+          
+          <div class="response_area">
+          
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  
+  
+  <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
   
     <?php if (isset($latest_promotion) && !empty($latest_promotion)) { ?>
       <div class="col-md-<?php echo $top_columns; ?> latest_promotion bh_infobox">
