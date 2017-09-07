@@ -33,7 +33,7 @@ jQuery(function($){
           }, 10000);
           
         } else {
-          if (response.code == 200) {
+          if (response.code == 200 || response.code == 201) {
             jQuery('.response_area').text('Thank you for posting your inquiry! We will get back to you asap.');
             
             setTimeout(function () {

@@ -56,14 +56,16 @@ if ( !function_exists( 'add_action' ) ) {
         
       }
       
-      $request = $this->submit_form($bizyhood_id, $params);
+      $headers['Content-type'] = "application/json";
+      
+      $request = $this->submit_form($bizyhood_id, json_encode($params), $headers);
       
       wp_send_json($request);
       
     }
     
     
-    public static function submit_form($bizyhood_id, $params)
+    public static function submit_form($bizyhood_id, $params, $headers)
     {
       
       global $wp_query;
@@ -76,12 +78,7 @@ if ( !function_exists( 'add_action' ) ) {
       }
 
       try {
-        $response = $client->fetch($api_url . "/v2/business/" . $bizyhood_id.'/topic/', $client::HTTP_METHOD_POST);
-        
-        // debug
-        // echo 'send to: <pre>'. $api_url . "/v2/business/" . $bizyhood_id.'/topic/'.'</pre>';
-        // echo '<br />data sent: <pre>'.print_r($params, true).'</pre>';
-        
+        $response = $client->fetch($api_url . "/v2/business/" . $bizyhood_id.'/topic/', $params, $client::HTTP_METHOD_POST, $headers);        
       } catch (Exception $e) {
         return false;
       }  
