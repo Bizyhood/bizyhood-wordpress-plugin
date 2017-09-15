@@ -58,33 +58,11 @@ if ( !function_exists( 'add_action' ) ) {
       
       $headers['Content-type'] = "application/json";
       
-      $request = $this->submit_form($bizyhood_id, json_encode($params), $headers);
+      $request = Bizyhood_Api::submit_cta_form($bizyhood_id, json_encode($params), $headers);
       
       wp_send_json($request);
       
     }
     
-    
-    public static function submit_form($bizyhood_id, $params, $headers)
-    {
-      
-      global $wp_query;
-      
-      $api_url = Bizyhood_Utility::getApiUrl();
-      $client = Bizyhood_oAuth::oAuthClient();
-      
-      if (is_wp_error($client)) {
-        return false;
-      }
-
-      try {
-        $response = $client->fetch($api_url . "/v2/business/" . $bizyhood_id.'/topic/', $params, $client::HTTP_METHOD_POST, $headers);        
-      } catch (Exception $e) {
-        return false;
-      }  
-      $result = json_decode(json_encode($response['result']), FALSE);
-    
-      return $response;
-    }
     
   }

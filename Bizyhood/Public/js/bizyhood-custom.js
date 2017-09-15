@@ -34,7 +34,7 @@ jQuery(function($){
           
         } else {
           if (response.code == 200 || response.code == 201) {
-            jQuery('.response_area').text('Thank you for posting your inquiry! We will get back to you asap.');
+            jQuery('.response_area').text('Thank you for your question. We will get back to you as soon as possible.');
             
             setTimeout(function () {
               jQuery('#question_cta_modal').modal('hide');
