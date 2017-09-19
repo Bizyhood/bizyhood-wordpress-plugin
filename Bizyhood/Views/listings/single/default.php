@@ -14,7 +14,7 @@
   <div class="row zero-gutter bh_headline_row">
     <?php if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'before' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') { ?>
     <div class="col-md-12">
-      <?php echo Bizyhood_Utility::buildShareIcons($url, $business->name, $business->description,$business->business_logo->url); ?>
+      <?php echo Bizyhood_Utility::buildShareIcons($url, $business->name, $business->description,$business->business_logo->image->url); ?>
     </div>
     <?php } ?>
     <div class="col-md-9">
@@ -59,9 +59,7 @@
   </div><!-- /.row -->
   <?php } ?>
   
-  
-  <?php if ($business->claimed == 1 && $show_first_row === true) { ?>
-  
+  <?php if ($business->claimed == 1) { ?>
   <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
     <div class="col-md-12 question_cta bh_infobox">
       <div class="column-inner">
@@ -114,6 +112,11 @@
 
     </div>
   </div>
+  <?php } ?>
+  
+  <?php if ($business->claimed == 1 && $show_first_row === true) { ?>
+  
+  
   
   
   <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
