@@ -23,6 +23,7 @@ require_once dirname(__FILE__) . '/Shortcodes.php';
 require_once dirname(__FILE__) . '/Sitemap.php';
 require_once dirname(__FILE__) . '/Meta.php';
 require_once dirname(__FILE__) . '/Bizybox.php';
+require_once dirname(__FILE__) . '/Cta.php';
 
 
 if (! class_exists('Bizyhood_Core')):
@@ -422,6 +423,16 @@ class Bizyhood_Core
         add_action('wp', array( $this, 'load_rss'));
         
         // rss feed END
+        
+        
+        // question cta form START
+        
+        $Bizyhood_CTA = new Bizyhood_CTA();
+        
+        add_action( 'wp_ajax_question_cta', array( $Bizyhood_CTA, 'question_cta') );
+        add_action( 'wp_ajax_nopriv_question_cta', array( $Bizyhood_CTA, 'question_cta') );
+        
+        // question cta form END
 
     }
     
@@ -596,7 +607,11 @@ class Bizyhood_Core
         wp_enqueue_script('photoswipe-ui-js', Bizyhood_Utility::getVendorBaseURL() . 'photoswipe/js/photoswipe-ui-default.js', array('photoswipe-js'), BIZYHOOD_VERSION, true);
         wp_enqueue_script('bizyhood-gallery-js', Bizyhood_Utility::getJSBaseURL() . 'bizyhood-plugin-gallery.js', array(), BIZYHOOD_VERSION, true);
         wp_enqueue_script('bizyhood-matchHeight-js', Bizyhood_Utility::getJSBaseURL() . 'jquery.matchHeight-min.js', array(), BIZYHOOD_VERSION, true);
+        wp_enqueue_script('bootstrap-min-js', Bizyhood_Utility::getJSBaseURL() . 'bootstrap.min.js', array(), BIZYHOOD_VERSION, true);
         wp_enqueue_script('bizyhood-custom-js', Bizyhood_Utility::getJSBaseURL() . 'bizyhood-custom.js', array(), BIZYHOOD_VERSION, true);
+        
+        // in JavaScript, object properties are accessed as ajax_object.ajax_url, ajax_object.we_value
+        wp_localize_script( 'bizyhood-custom-js', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
     }
     
     function load_plugin_analytics()

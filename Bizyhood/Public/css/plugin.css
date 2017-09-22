@@ -265,13 +265,15 @@ a.facet_helper {
   -ms-user-select: none;
   user-select: none;
 }
-.bh_button.btn-inline {
+.bh_button.btn-inline, .btn.btn-inline {
   display: inline-block;
 }
 .bh_headline_row {
   margin-top: 15px;
 }
 
+.bh_error { color: crimson; }
+.bh_success { color: #3c763d; }
 .bh_local-nav h5 {padding:10px;margin:0;}
 .bh_business-header-title h3 {font-size:24px;  margin:0 0 20px;}
 .bh_business-header {border-bottom:0;margin-bottom:15px;}
@@ -440,6 +442,9 @@ ul.bh_list .bh_list_item img {
 }
 
 .bh_noresults p { padding: 10px; }
+
+.modal-header .close:hover { background-color: transparent; }
+#question_cta_modal textarea { min-height: 120px; }
 
 @media (max-width: 992px) {
   .bh_gallery-list .bh_gallery-thumb {width:33%;}

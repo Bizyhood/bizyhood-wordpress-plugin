@@ -41,6 +41,7 @@ if ( !function_exists( 'add_action' ) ) {
       try {
         $response = $client->fetch($api_url . "/v2/business/" . $bizyhood_id.'/', $params);
       } catch (Exception $e) {
+        Bizyhood_Log::add('warn', "Business details fetch failed: $e");
         return false;
       }  
       $business = json_decode(json_encode($response['result']), FALSE);
@@ -258,6 +259,7 @@ if ( !function_exists( 'add_action' ) ) {
       try {
         $response = $client->fetch($api_url . '/v2/'. $info_request .($bizyhood_id != '' ? '/' . $bizyhood_id : '').'/', $params);
       } catch (Exception $e) {
+        Bizyhood_Log::add('warn', "API business related content fetch failed: $e");
         return false;
       }  
       $info = json_decode(json_encode($response['result']), FALSE);
@@ -351,6 +353,29 @@ if ( !function_exists( 'add_action' ) ) {
       
       return $response;
       
+    }
+    
+    public static function submit_cta_form($bizyhood_id, $params, $headers)
+    {
+      
+      global $wp_query;
+      
+      $api_url = Bizyhood_Utility::getApiUrl();
+      $client = Bizyhood_oAuth::oAuthClient();
+      
+      if (is_wp_error($client)) {
+        return false;
+      }
+
+      try {
+        $response = $client->fetch($api_url . "/v2/business/" . $bizyhood_id.'/topic/', $params, $client::HTTP_METHOD_POST, $headers);        
+      } catch (Exception $e) {
+        Bizyhood_Log::add('warn', "CTA form submit failed: $e");
+        return false;
+      }  
+      $result = json_decode(json_encode($response['result']), FALSE);
+    
+      return $response;
     }
     
     
