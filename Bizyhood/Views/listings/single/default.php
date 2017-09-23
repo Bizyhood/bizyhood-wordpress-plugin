@@ -65,7 +65,7 @@
       <div class="column-inner">
         <div class="bh_alert text-center">
           <?php echo __('Have a question?', 'bizyhood'); ?>
-          <a data-toggle="modal" data-target="#question_cta_modal" class="btn btn-info question_cta_btn" <?php echo $colors['style']; ?> href="#" title="<?php echo __('Ask now!', 'bizyhood'); ?>"><?php echo __('Ask now!', 'bizyhood'); ?></a>
+          <a id="id_question_cta_btn" data-toggle="modal" data-target="#question_cta_modal" class="btn btn-info question_cta_btn" <?php echo $colors['style']; ?> href="#" title="<?php echo __('Ask now!', 'bizyhood'); ?>"><?php echo __('Ask now!', 'bizyhood'); ?></a>
         </div>
       </div>
     </div>
@@ -408,9 +408,21 @@
     var cta_link = document.getElementById("id_<?php echo $business->cta->name; ?>");
     analytics.trackLink(cta_link, "Clicked Business CTA", {
         cta: "<?php echo $business->cta->name; ?>",
-        business_id: "<?php echo $business->business_id; ?>",
+        business_id: "<?php echo $business->bizyhood_id; ?>",
         business_name: "<?php echo $business->name; ?>"
     });
     <?php } ?>  
+
+
+    <?php if ($business->claimed == 1) { ?>
+    var aaq_link = document.getElementById("id_question_cta_btn");
+    analytics.trackLink(aaq_link, "Clicked AAQ CTA", {
+        business_id: "<?php echo $business->bizyhood_id; ?>",
+        business_name: "<?php echo $business->name; ?>"
+    });
     
+    var aaq_form = document.getElementById("question_cta_form");
+    analytics.trackForm(aaq_form, "AAQ Submitted");
+    <?php } ?>  
+
 </script>
