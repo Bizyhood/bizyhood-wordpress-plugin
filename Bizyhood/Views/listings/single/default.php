@@ -59,7 +59,7 @@
   </div><!-- /.row -->
   <?php } ?>
   
-  <?php if ($business->claimed == 1) { ?>
+  <?php if ($business->verified == 1) { ?>
   <div class="row rowgrid zero-gutter bh_infoboxes sameheight">
     <div class="col-md-12 question_cta bh_infobox">
       <div class="column-inner">
