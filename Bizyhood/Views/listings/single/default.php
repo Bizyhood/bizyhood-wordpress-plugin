@@ -65,7 +65,7 @@
       <div class="column-inner">
         <div class="bh_alert text-center">
           <?php echo __('Have a question?', 'bizyhood'); ?>
-          <a id="id_question_cta_btn" data-toggle="modal" data-target="#question_cta_modal" class="btn btn-info question_cta_btn" <?php echo $colors['style']; ?> href="#" title="<?php echo __('Ask now!', 'bizyhood'); ?>"><?php echo __('Ask now!', 'bizyhood'); ?></a>
+          <a id="id_question_cta_btn" class="btn btn-info question_cta_btn biz_question_modal" <?php echo $colors['style']; ?> href="#" title="<?php echo __('Ask now!', 'bizyhood'); ?>"><?php echo __('Ask now!', 'bizyhood'); ?></a>
         </div>
       </div>
     </div>

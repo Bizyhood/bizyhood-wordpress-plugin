@@ -2,7 +2,11 @@ jQuery(function($){
   
   if (jQuery('#question_cta_form').length > 0) {
     
-    console.log('form');
+	jQuery('#id_question_cta_btn').on('click', function(e) {
+		e.preventDefault();
+		jQuery('#question_cta_modal').modal();
+		return false;
+	});
     
     var bizyhood_id = jQuery('#question_cta_form').attr('data-business');
     
