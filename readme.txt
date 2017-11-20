@@ -3,7 +3,7 @@ Contributors: bizyscott, efabrikant, spyrosvl
 Tags: business directory, events, promotions, search, Local SEO, hyperlocal, news, publishers
 Requires at least: 3.9
 Tested up to: 4.8
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,10 @@ Bizyhood is a software company based in Asbury Park, NJ that believes in the pow
 
 
 == Changelog ==
+
+= 1.5.3 =
+
+* Fixed conflict with Bootstrap based themes in AAQ modal.
 
 = 1.5.2 =
 
