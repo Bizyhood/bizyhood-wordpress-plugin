@@ -81,6 +81,7 @@ class Bizyhood_Sitemap
       $urls         = array(); // initialize URLs array
       $apimax       = Bizyhood_Core::API_MAX_LIMIT; // set the max we can get from the API in one fetch
       $urlindex     = 0; // help index the urls array
+	  
            
       // if yoast is set to grab per sitemap more than $apimax (Bizyhood_Core::API_MAX_LIMIT) results
       if ($max_entries > $apimax) {
@@ -88,6 +89,7 @@ class Bizyhood_Sitemap
         $query_params = array('paged' => 1, 'verified' => $verified, 'ps' => $ps);
         $queryapi = Bizyhood_Api::businesses_search($query_params);
         
+		$count = $queryapi['total_count']; // get the number of results
         
         // max number of pages
         $maxsitemapnum = (int) ceil( $count / $max_entries );
@@ -101,8 +103,7 @@ class Bizyhood_Sitemap
           
           if (!empty($queryapi['businesses'])) {
             foreach($queryapi['businesses'] as $business) {
-              $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-              $urls[$urlindex]['url'] = $urlbase.$urlarr[0].'/'.$urlarr[1].'/';
+              $urls[$urlindex]['url'] = $urlbase.$business->slug.'/'.$business->bizyhood_id.'/';
               $urls[$urlindex]['date'] = $date;
               $urlindex++;
             }
@@ -144,8 +145,7 @@ class Bizyhood_Sitemap
                 
                 if ($urlindex == $max_entries) { break 2; }
                 
-                $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-                $urls[$urlindex]['url'] = $urlbase.$urlarr[0].'/'.$urlarr[1].'/';
+                $urls[$urlindex]['url'] = $urlbase.$business->slug.'/'.$business->bizyhood_id.'/';
                 $urls[$urlindex]['date'] = $date;
                 $urlindex++;
               }
@@ -172,8 +172,8 @@ class Bizyhood_Sitemap
         
         if (!empty($queryapi['businesses'])) {
           foreach($queryapi['businesses'] as $business) {
-            $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-            $urls[$urlindex]['url'] = $urlbase.$urlarr[0].'/'.$urlarr[1].'/';
+
+			$urls[$urlindex]['url'] = $urlbase.$business->slug.'/'.$business->bizyhood_id.'/';
             $urls[$urlindex]['date'] = $date; // this needs to be changed to the last modified when added to the API // TODO
             $urlindex++;
           }
@@ -251,9 +251,8 @@ class Bizyhood_Sitemap
       
       // get first 12 urls to save an API request
       if ($start == 1) {
-        foreach($queryapi['businesses'] as $business) {
-          $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-          $pages[] = Array( "loc" => $urlbase.$urlarr[0].'/'.$urlarr[1].'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );
+        foreach($queryapi['businesses'] as $business) {		  
+          $pages[] = Array( "loc" => $urlbase.$business->slug.'/'.$business->bizyhood_id.'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );
         }
       }
       
@@ -262,8 +261,7 @@ class Bizyhood_Sitemap
       while($i <= $numofpages) {
         $queryapi = Bizyhood_Api::businesses_search(array('paged' => $i, 'verified' => TRUE, 'ps' => Bizyhood_Core::API_MAX_LIMIT));
         foreach($queryapi['businesses'] as $business) {
-          $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-          $pages[] = Array( "loc" => $urlbase.$urlarr[0].'/'.$urlarr[1].'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );
+          $pages[] = Array( "loc" => $urlbase.$business->slug.'/'.$business->bizyhood_id.'/', "lastmod" => $date, "changefreq" => "weekly", "priority" => "0.6" );
         }
         $i++;
       }
