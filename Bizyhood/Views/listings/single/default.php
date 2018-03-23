@@ -14,7 +14,10 @@
   <div class="row zero-gutter bh_headline_row">
     <?php if (Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'before' || Bizyhood_Utility::getOption(Bizyhood_Core::ICON_PLACEMENT) == 'both') { ?>
     <div class="col-md-12">
-      <?php echo Bizyhood_Utility::buildShareIcons($url, $business->name, $business->description,$business->business_logo->url); ?>
+	<?php
+		$logo_url = isset($business->business_logo->url) ? $business->business_logo->url : '';
+	?>
+      <?php echo Bizyhood_Utility::buildShareIcons($url, $business->name, $business->description,$logo_url); ?>
     </div>
     <?php } ?>
     <div class="col-md-9">

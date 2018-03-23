@@ -35,10 +35,8 @@ if ( !function_exists( 'add_action' ) ) {
         $out .= '<ul class="bizyres">';
         $i = 0;
         foreach ($queryapi['businesses'] as $business) {
-          
-          $urlarr = array_slice(explode('/', $business->bizyhood_url), -3);
-          
-          $out .= '<li class="'. ($i%2 == false ? 'alternate' : '') .'"><a href="'. $urlbase.$urlarr[0].'/'.$urlarr[1].'/' .'" title="'. $business->name .'">'. $business->name .' - '. $business->address1 .', '. $business->locality .', '. $business->region.', '. $business->postal_code .'</li>';
+                    
+          $out .= '<li class="'. ($i%2 == false ? 'alternate' : '') .'"><a href="'. $urlbase.$business->slug.'/'.$business->bizyhood_id.'/' .'" title="'. $business->name .'">'. $business->name .' - '. $business->address1 .', '. $business->locality .', '. $business->region.', '. $business->postal_code .'</li>';
           $i++;
         }
         $out .= '</ul>';
